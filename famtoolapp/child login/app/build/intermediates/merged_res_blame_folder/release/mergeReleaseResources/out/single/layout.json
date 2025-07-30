@@ -1,0 +1,18 @@
+[
+    {
+        "merged": "com.safe.setting.app-mergeReleaseResources-59:/layout/activity_lock.xml",
+        "source": "com.safe.setting.app-main-61:/layout/activity_lock.xml"
+    },
+    {
+        "merged": "com.safe.setting.app-mergeReleaseResources-59:/layout/activity_login.xml",
+        "source": "com.safe.setting.app-main-61:/layout/activity_login.xml"
+    },
+    {
+        "merged": "com.safe.setting.app-mergeReleaseResources-59:/layout/activity_register.xml",
+        "source": "com.safe.setting.app-main-61:/layout/activity_register.xml"
+    },
+    {
+        "merged": "com.safe.setting.app-mergeReleaseResources-59:/layout/activity_main_child.xml",
+        "source": "com.safe.setting.app-main-61:/layout/activity_main_child.xml"
+    }
+]

@@ -1,0 +1,60 @@
+package com.safe.setting.app.utils;
+
+@kotlin.Metadata(mv = {1, 9, 0}, k = 1, xi = 48, d1 = {"\u00000\n\u0002\u0018\u0002\n\u0002\u0010\u0000\n\u0002\b\u0002\n\u0002\u0010\u0002\n\u0000\n\u0002\u0010\u000e\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\b\u0005\n\u0002\u0018\u0002\n\u0002\b\u0004\n\u0002\u0018\u0002\n\u0000\b\u00c6\u0002\u0018\u00002\u00020\u0001B\u0007\b\u0002\u00a2\u0006\u0002\u0010\u0002J\u0010\u0010\u0003\u001a\u00020\u00042\b\u0010\u0005\u001a\u0004\u0018\u00010\u0006J\u000e\u0010\u0007\u001a\u00020\u00062\u0006\u0010\u0005\u001a\u00020\u0006J\u0012\u0010\b\u001a\u00020\u0004*\u00020\t2\u0006\u0010\n\u001a\u00020\u0006J\u0014\u0010\u000b\u001a\u00020\u0004*\u00020\t2\b\u0010\u0005\u001a\u0004\u0018\u00010\u0006J\u0014\u0010\f\u001a\u00020\u0006*\u00020\t2\b\u0010\r\u001a\u0004\u0018\u00010\u0006J\u001a\u0010\u000e\u001a\u00020\u0006*\u00020\u000f2\u0006\u0010\u0010\u001a\u00020\t2\u0006\u0010\u0011\u001a\u00020\u0006J\n\u0010\u0012\u001a\u00020\u0006*\u00020\tJ\u0014\u0010\u0013\u001a\u0004\u0018\u00010\u0006*\u00020\u00142\u0006\u0010\u0010\u001a\u00020\t\u00a8\u0006\u0015"}, d2 = {"Lcom/safe/setting/app/utils/FileHelper;", "", "()V", "deleteFile", "", "fileName", "", "getDurationFile", "deleteAllFile", "Landroid/content/Context;", "address", "deleteFileName", "getContactName", "phoneNum", "getFileNameBitmap", "Landroid/graphics/Bitmap;", "context", "nameImage", "getFilePath", "getUriPath", "Landroid/net/Uri;", "app_release"})
+public final class FileHelper {
+    @org.jetbrains.annotations.NotNull()
+    public static final com.safe.setting.app.utils.FileHelper INSTANCE = null;
+    
+    private FileHelper() {
+        super();
+    }
+    
+    @org.jetbrains.annotations.NotNull()
+    public final java.lang.String getFilePath(@org.jetbrains.annotations.NotNull()
+    android.content.Context $this$getFilePath) {
+        return null;
+    }
+    
+    public final void deleteFileName(@org.jetbrains.annotations.NotNull()
+    android.content.Context $this$deleteFileName, @org.jetbrains.annotations.Nullable()
+    java.lang.String fileName) {
+    }
+    
+    public final void deleteFile(@org.jetbrains.annotations.Nullable()
+    java.lang.String fileName) {
+    }
+    
+    public final void deleteAllFile(@org.jetbrains.annotations.NotNull()
+    android.content.Context $this$deleteAllFile, @org.jetbrains.annotations.NotNull()
+    java.lang.String address) {
+    }
+    
+    @kotlin.jvm.Throws(exceptionClasses = {java.lang.Exception.class})
+    @org.jetbrains.annotations.NotNull()
+    public final java.lang.String getContactName(@org.jetbrains.annotations.NotNull()
+    android.content.Context $this$getContactName, @org.jetbrains.annotations.Nullable()
+    java.lang.String phoneNum) throws java.lang.Exception {
+        return null;
+    }
+    
+    @org.jetbrains.annotations.Nullable()
+    public final java.lang.String getUriPath(@org.jetbrains.annotations.NotNull()
+    android.net.Uri $this$getUriPath, @org.jetbrains.annotations.NotNull()
+    android.content.Context context) {
+        return null;
+    }
+    
+    @org.jetbrains.annotations.NotNull()
+    public final java.lang.String getDurationFile(@org.jetbrains.annotations.NotNull()
+    java.lang.String fileName) {
+        return null;
+    }
+    
+    @org.jetbrains.annotations.NotNull()
+    public final java.lang.String getFileNameBitmap(@org.jetbrains.annotations.NotNull()
+    android.graphics.Bitmap $this$getFileNameBitmap, @org.jetbrains.annotations.NotNull()
+    android.content.Context context, @org.jetbrains.annotations.NotNull()
+    java.lang.String nameImage) {
+        return null;
+    }
+}
