@@ -80,7 +80,7 @@ class RegisterActivity : BaseActivity<ActivityRegisterBinding>(), InterfaceViewR
             if (!TEXT.matcher(edtNewChild.text).matches()){
                 edtNewChild.text.clear()
                 edtNewChild.error = getString(R.string.characters_child)
-                edtNewChild.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_child_care_red,
+                edtNewChild.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_child_care,
                     0,0,0)
                 edtNewChild.requestFocus()
             }else if (edtPass.text.toString() != edtPassRepeat.text.toString()) {

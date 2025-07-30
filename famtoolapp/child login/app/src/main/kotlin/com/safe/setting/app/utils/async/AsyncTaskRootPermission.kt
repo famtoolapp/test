@@ -4,7 +4,7 @@ import android.content.Context
 import cn.pedant.SweetAlert.SweetAlertDialog
 import com.safe.setting.app.R
 import com.safe.setting.app.utils.ConstFun.alertDialog
-import com.safe.setting.app.utils.ConstFun.isRoot // FIX: Import the isRoot function
+import com.safe.setting.app.utils.ConstFun.isRoot
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -15,16 +15,17 @@ class AsyncTaskRootPermission(private val context: Context, private val result: 
 
     private var dialog: SweetAlertDialog? = null
 
-
-
     @OptIn(DelicateCoroutinesApi::class)
     fun execute() {
-        dialog = context.alertDialog(SweetAlertDialog.PROGRESS_TYPE, R.string.check_root_access, null, 0) {
+        // FIX: Replaced the deleted string resource with a hardcoded string
+        dialog = context.alertDialog(SweetAlertDialog.PROGRESS_TYPE, 0, "Checking root access...", 0) {
+            // We pass 0 for title and button text since they are not used for PROGRESS_TYPE
+            // and we provide the message directly.
+            titleText = "Checking root access"
             show()
         }
 
         GlobalScope.launch(Dispatchers.IO) {
-            // FIX: Replaced the crashing RootBeer check with the safer, manual isRoot() function.
             val isRooted = isRoot()
 
             launch(Dispatchers.Main) {
@@ -34,5 +35,3 @@ class AsyncTaskRootPermission(private val context: Context, private val result: 
         }
     }
 }
-
-

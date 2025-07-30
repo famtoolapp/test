@@ -1,5 +1,6 @@
 package com.safe.setting.app.di.module
 
+import android.app.Activity
 import android.content.Context
 import androidx.fragment.app.FragmentManager
 import androidx.appcompat.app.AppCompatActivity
@@ -8,38 +9,29 @@ import com.safe.setting.app.di.PerActivity
 import com.safe.setting.app.ui.activities.login.InteractorLogin
 import com.safe.setting.app.ui.activities.login.InterfaceInteractorLogin
 import com.safe.setting.app.ui.activities.login.InterfaceViewLogin
-import com.safe.setting.app.ui.activities.mainparent.InteractorMainParent
-import com.safe.setting.app.ui.activities.mainparent.InterfaceInteractorMainParent
-import com.safe.setting.app.ui.activities.mainparent.InterfaceViewMainParent
 import com.safe.setting.app.ui.activities.register.InteractorRegister
 import com.safe.setting.app.ui.activities.register.InterfaceInteractorRegister
 import com.safe.setting.app.ui.activities.register.InterfaceViewRegister
-import com.safe.setting.app.ui.fragments.maps.InteractorMaps
-import com.safe.setting.app.ui.fragments.maps.InterfaceInteractorMaps
-import com.safe.setting.app.ui.fragments.maps.InterfaceViewMaps
 import dagger.Module
 import dagger.Provides
 
-
+/**
+ * Created by Lisandro Gómez on 11/20/20.
+ */
 @Module
-class ActivityModule(private val activity: AppCompatActivity) {
+class ActivityModule(var activity: AppCompatActivity) {
 
     @Provides
-    fun provideContext(): Context = activity.applicationContext
+    fun provideActivity(): Activity = activity
 
     @Provides
-    fun provideActivity(): AppCompatActivity = activity
+    fun provideContext(): Context = activity
 
     @Provides
     fun provideSupportFragmentManager(): FragmentManager = activity.supportFragmentManager
 
-
     @Provides
-    fun provideLayoutManager(context: Context): LinearLayoutManager = LinearLayoutManager(context)
-
-    @Provides
-    @PerActivity
-    fun provideInterfaceInteractorMain(interactorParent: InteractorMainParent<InterfaceViewMainParent>): InterfaceInteractorMainParent<InterfaceViewMainParent> = interactorParent
+    fun provideLinearLayoutManager(): LinearLayoutManager = LinearLayoutManager(activity)
 
     @Provides
     @PerActivity
@@ -48,10 +40,4 @@ class ActivityModule(private val activity: AppCompatActivity) {
     @Provides
     @PerActivity
     fun provideInterfaceInteractorRegister(interactor: InteractorRegister<InterfaceViewRegister>): InterfaceInteractorRegister<InterfaceViewRegister> = interactor
-
-    @Provides
-    @PerActivity
-    fun provideInterfaceInteractorMaps(interactor: InteractorMaps<InterfaceViewMaps>): InterfaceInteractorMaps<InterfaceViewMaps> = interactor
-
-
 }

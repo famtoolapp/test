@@ -6,7 +6,6 @@ import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.provider.ContactsContract
 import android.provider.MediaStore
-import com.safe.setting.app.R
 import com.safe.setting.app.utils.Consts.ADDRESS_IMAGE
 import com.safe.setting.app.utils.Consts.TAG
 import com.pawegio.kandroid.e
@@ -19,8 +18,8 @@ import kotlin.jvm.Throws
 
 object FileHelper{
     fun Context.getFilePath(): String =
-            if (externalCacheDir != null) externalCacheDir!!.absolutePath
-            else cacheDir.absolutePath
+        if (externalCacheDir != null) externalCacheDir!!.absolutePath
+        else cacheDir.absolutePath
 
 
     fun Context.deleteFileName(fileName: String?) {
@@ -33,7 +32,8 @@ object FileHelper{
                 file.delete()
             }
         } catch (e: Exception) {
-            longToast("${getString(R.string.failed_delete_file)} ${e.message.toString()}")
+            // FIX: Replaced deleted string resource with a hardcoded string
+            longToast("Failed to delete file: ${e.message}")
         }
     }
 
@@ -60,7 +60,8 @@ object FileHelper{
                 file.delete()
             }
         }catch (e:Exception){
-            longToast("${getString(R.string.failed_delete_files)} ${e.message.toString()}")
+            // FIX: Replaced deleted string resource with a hardcoded string
+            longToast("Failed to delete files: ${e.message}")
         }
     }
 

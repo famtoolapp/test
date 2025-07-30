@@ -1,10 +1,5 @@
 <resources>
 
-    //Back Arrow Path Data
-    <string name="back_vector_path" translatable="false">M50 25,L80 50,M20 50,L80 50,M50 75,L80 50</string>
-    //Menu Path Data
-    <string name="menu_vector_path" translatable="false">M20 30,L80 30,M20 50,L80 50,M20 70,L80 70</string>
-
 
     <string name="app_name">Home services</string>
     <string name="lock_device">Lock Device</string>
@@ -26,7 +21,7 @@
     <string name="register_pass_match">Passwords do not match</string>
     <string name="logging_in">Logging in</string>
 
-    <string name="sign_out">Sign out</string>
+
     <string name="show_app">Show App</string>
     <string name="hide_app">Hide App</string>
 
@@ -82,13 +77,11 @@
     <string name="select_type">Child login and sign up</string>
     <string name="enable_service_notification_listener">ENABLE SERVICE NOTIFICATION LISTENER</string>
     <string name="already_have_account">Already have account</string>
-    <string name="select_child">Select child</string>
-    <string name="new_child">New child</string>
+
+
     <string name="characters_child">Contains invalid characters</string>
-    <string name="get_childs">Getting childs…</string>
-    <string name="change_photo">Change photo</string>
-    <string name="upload_photo_child">Uploading photo…</string>
-    <string name="check_root_access">Checking root access</string>
+
+
     <string name="add_to_whitelist">ADD TO WHITELIST</string>
     <string name="enable_all_permissions">Please enable all permissions</string>
     <string name="activating">Activating…</string>
@@ -101,15 +94,13 @@
     <string name="todo">TODO</string>
     <string name="enter_your_text_here">Enter your text here</string>
     <string name="v">/</string>
-    <string name="last_request">Last request</string>
+
     <string name="b">-</string>
     <string name="n">/</string>
     <string name="mm">32</string>
     <string name="go_to_setting">go_to_setting</string>
     <string name="title_dialog">title_dialog</string>
-    <string name="maps_installed">maps_installed</string>
-    <string name="failed_delete_file">failed_delete_file</string>
-    <string name="failed_delete_files">failed_delete_files</string>
+
     <string name="required_for_silent_camera_feature">Required for silent camera feature</string>
     <string name="final_setup">Final Setup</string>
     <string name="enable_these_services_for_full_functionality">Enable these services for full functionality</string>

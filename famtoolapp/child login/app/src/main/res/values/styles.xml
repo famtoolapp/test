@@ -128,13 +128,5 @@
 
     <style name="Widget" parent="@android:style/Widget.Material" />
 
-    <style name="Widget.NavigationView" parent="@style/Widget.MaterialComponents.NavigationView">
-        <item name="itemBackground">@drawable/navigation_item_background</item>
-        <item name="itemHorizontalPadding">@dimen/nav_item_horizontal_padding</item>
-    </style>
-
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 </resources>

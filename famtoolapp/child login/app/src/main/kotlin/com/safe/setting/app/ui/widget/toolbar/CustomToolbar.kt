@@ -20,8 +20,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.safe.setting.app.R
 import com.safe.setting.app.ui.animation.AnimationUtils.animateAlpha
-import com.safe.setting.app.ui.widget.toolbar.adapter.DefaultSuggestionsAdapter
-import com.safe.setting.app.ui.widget.toolbar.adapter.SuggestionsAdapter
 import com.safe.setting.app.utils.ConstFun.isAndroidM
 import com.safe.setting.app.utils.ConstFun.isShow
 import com.safe.setting.app.utils.ConstFun.showKeyboard
@@ -31,7 +29,7 @@ import com.pawegio.kandroid.show
 import kotlin.math.ceil
 
 
-class CustomToolbar : FrameLayout, View.OnClickListener, Animation.AnimationListener, SuggestionsAdapter.OnItemViewClickListener, View.OnFocusChangeListener, TextView.OnEditorActionListener, TextWatcher {
+class CustomToolbar : FrameLayout, View.OnClickListener, Animation.AnimationListener, View.OnFocusChangeListener, TextView.OnEditorActionListener, TextWatcher {
 
 
     private lateinit var inputContainer: LinearLayout
@@ -79,7 +77,6 @@ class CustomToolbar : FrameLayout, View.OnClickListener, Animation.AnimationList
 
     private var isSuggestionsVisible: Boolean = false
 
-    private var adapter: DefaultSuggestionsAdapter? = null
 
     private var density: Float = 0.toFloat()
 
@@ -126,7 +123,7 @@ class CustomToolbar : FrameLayout, View.OnClickListener, Animation.AnimationList
 
         density = resources.displayMetrics.density
 
-        adapter = DefaultSuggestionsAdapter()
+
 
         recyclerView.layoutManager = LinearLayoutManager(context)
 
@@ -355,14 +352,7 @@ class CustomToolbar : FrameLayout, View.OnClickListener, Animation.AnimationList
         else clearIcon.hide()
     }
 
-    override fun onItemClickListener(position: Int, text: String) {
-        searchEditText.append(text)
-        textSearchConfirmed(text)
-    }
 
-    override fun onItemDeleteListener(position: Int, text: String) {
-        TODO("Not yet implemented")
-    }
 
 
     interface OnToolbarActionListener {

