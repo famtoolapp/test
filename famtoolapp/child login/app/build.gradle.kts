@@ -35,6 +35,7 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -54,8 +55,8 @@ android {
         implementation("androidx.recyclerview:recyclerview:1.4.0")
 
         testImplementation("junit:junit:4.13.2")
-        androidTestImplementation("androidx.test.ext:junit:1.2.1")
-        androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+        androidTestImplementation("androidx.test.ext:junit:1.3.0")
+        androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
 
         //android lifecycle
         implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.2")

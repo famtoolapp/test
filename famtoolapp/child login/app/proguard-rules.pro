@@ -162,3 +162,110 @@
 # Keep annotation classes and their methods
 -keepattributes *Annotation
 
+
+#
+##=========================================================================================
+## कृपया ध्यान दें: यह एक विस्तृत ProGuard फ़ाइल है जो आपकी ऐप को क्रैश होने से बचाने
+## और साथ ही कोड को सुरक्षित रखने के लिए डिज़ाइन की गई है।
+##=========================================================================================
+#
+## सामान्य अनुकूलन और चेतावनियाँ
+#-ignorewarnings
+#-dontwarn com.squareup.okhttp.**
+#-dontwarn com.daimajia.easing.**
+#-dontwarn javax.annotation.**
+#-dontwarn org.conscrypt.**
+#-dontwarn com.github.pawegio.kandroid.**
+#
+## कोर एंड्रॉइड और कोटलिन कक्षाओं को रखें
+#-keep public class * extends android.app.Application
+#-keep public class * extends android.app.Activity
+#-keep public class * extends android.app.Service
+#-keep public class * extends android.content.BroadcastReceiver
+#-keep public class * extends android.content.ContentProvider
+#-keep public class * extends android.view.View {
+#    public <init>(android.content.Context);
+#    public <init>(android.content.Context, android.util.AttributeSet);
+#    public <init>(android.content.Context, android.util.AttributeSet, int);
+#    public void set*(...);
+#}
+#
+## सभी R क्लास को रखें
+#-keep class **.R$* { *; }
+#
+## Parcelable इंटरफ़ेस को लागू करने वाली क्लास को रखें
+#-keep class * implements android.os.Parcelable {
+#  public static final android.os.Parcelable$Creator *;
+#}
+#
+## एनोटेशन को रखें
+#-keepattributes *Annotation*,Signature,InnerClasses
+#
+##=========================================================================================
+## लाइब्रेरी-विशिष्ट नियम
+##=========================================================================================
+#
+## Firebase
+#-keepclassmembers class com.google.firebase.database.** { *; }
+#-keepclassmembers class com.google.firebase.auth.** { *; }
+#-keepnames class com.fasterxml.jackson.annotation.JsonIgnoreProperties
+#-keepnames @com.fasterxml.jackson.annotation.JsonIgnoreProperties *
+#
+## Dagger 2
+#-keep class dagger.internal.codegen.** { *; }
+#-keep class javax.inject.Inject
+#-keep class * extends dagger.internal.Binding
+#-keep class * extends dagger.internal.ModuleAdapter
+#-keep @javax.inject.Scope class *
+#-keepclassmembers,allowobfuscation class * {
+#    @javax.inject.Inject <init>(...);
+#    @javax.inject.Inject <fields>;
+#}
+#
+## RxJava / RxKotlin / RxAndroid / RxBinding
+#-keep class io.reactivex.rxjava3.** { *; }
+#-keep class com.jakewharton.rxbinding4.** { *; }
+#-keepclassmembers class io.reactivex.rxjava3.internal.util.ExceptionHelper {
+#    public static <T> T wrapOrThrow(java.lang.Throwable);
+#}
+#
+## Glide
+#-keep public class * implements com.bumptech.glide.module.GlideModule
+#-keep public class * extends com.bumptech.glide.module.AppGlideModule
+#-keep public enum com.bumptech.glide.load.ImageHeaderParser$ImageType {
+#  **[] $VALUES;
+#  public *;
+#}
+#
+## Gson (फायरबेस और अन्य JSON कार्यों के लिए महत्वपूर्ण)
+#-keep class com.google.gson.** { *; }
+#
+## SweetAlert Dialog
+#-keep class cn.pedant.SweetAlert.** { *; }
+#
+## Android Device Names
+#-keep class com.jaredrummler.android.device.** { *; }
+#
+##=========================================================================================
+## आपकी एप्लीकेशन-विशिष्ट नियम
+##=========================================================================================
+#
+## मॉडल क्लास (Firebase/Gson के लिए सबसे महत्वपूर्ण)
+## यह सुनिश्चित करता है कि डेटा क्लास के नाम और फ़ील्ड न बदलें, ताकि डेटा सही ढंग से पढ़ा और लिखा जा सके।
+#-keep class com.safe.setting.app.data.model.** { *; }
+#-keepclassmembers class com.safe.setting.app.data.model.** {
+#    <fields>;
+#    <init>(...);
+#}
+#
+## UI विजेट्स
+## यदि आप XML में कस्टम व्यू का उपयोग कर रहे हैं, तो उनके कंस्ट्रक्टर को रखना आवश्यक है।
+#-keep class com.safe.setting.app.ui.widget.** { *; }
+#
+## Utils क्लास
+## यदि कोई यूटिलिटी क्लास रिफ्लेक्शन का उपयोग कर रही है, तो उसे रखना पड़ सकता है।
+## अभी के लिए, हम इसे अधिक सुरक्षित रखने के लिए कमेंट कर रहे हैं। यदि आवश्यक हो तो विशिष्ट क्लास को अनकम्मेंट करें।
+## -keep class com.safe.setting.app.utils.** { *; }
+#
+#
+#

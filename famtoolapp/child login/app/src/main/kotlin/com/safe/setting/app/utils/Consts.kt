@@ -12,7 +12,7 @@ object Consts {
     const val APP_DISABLED = 2
 
     const val TYPE_CHILD = "Child"
-    const val TYPE_PARENT = "Parent"
+//    const val TYPE_PARENT = "Parent"
 
     const val USER = "user"
 
