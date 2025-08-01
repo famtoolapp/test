@@ -3,10 +3,20 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("kotlin-parcelize")
     id("kotlin-kapt")
-    id("com.google.gms.google-services")
+
 }
 
 android {
+    // ... आपका मौजूदा defaultConfig, buildTypes, आदि
+
+    // NDK और CMake को कॉन्फ़िगर करने के लिए यह ब्लॉक जोड़ें
+    externalNativeBuild {
+        cmake {
+            path = file("src/main/cpp/CMakeLists.txt")
+            version = "3.22.1"
+        }
+    }
+
     namespace = "com.safe.setting.app"
     compileSdk = 35
 
@@ -30,6 +40,8 @@ android {
 
     kotlinOptions {
         jvmTarget = "11"
+        languageVersion = "1.9"
+
     }
 
     buildTypes {
@@ -40,9 +52,44 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("debug")
+        }
+
+        // यह बिल्ड टाइप ProGuard के साथ डीबगिंग के लिए है
+        create("debugWithProguard") {
+            initWith(getByName("debug")) // debug की सभी सेटिंग्स कॉपी करें
+            isMinifyEnabled = true // ProGuard को सक्षम करें
+            isShrinkResources = true // रिसोर्स श्रिंकिंग को सक्षम करें
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            // नोट: isDebuggable = true होने के कारण Gradle एक चेतावनी दिखाएगा,
+            // लेकिन यह आपको क्रैश को डीबग करने की अनुमति देगा।
+        }
+
+        debug {
+            isMinifyEnabled = false
+            isShrinkResources = false
         }
     }
+
+    bundle {
+        abi {
+            enableSplit = true
+        }
+    }
+
+//    buildTypes {
+//        release {
+//            isMinifyEnabled = true
+//            isShrinkResources = true
+//            proguardFiles(
+//                getDefaultProguardFile("proguard-android-optimize.txt"),
+//                "proguard-rules.pro"
+//            )
+//            signingConfig = signingConfigs.getByName("debug")
+//        }
+//    }
 
 
     dependencies {
