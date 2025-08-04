@@ -4,6 +4,8 @@ import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.Animatable
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
@@ -23,14 +25,12 @@ import com.safe.setting.app.ui.animation.AnimationUtils.animateAlpha
 import com.safe.setting.app.utils.ConstFun.isAndroidM
 import com.safe.setting.app.utils.ConstFun.isShow
 import com.safe.setting.app.utils.ConstFun.showKeyboard
-import com.pawegio.kandroid.hide
-import com.pawegio.kandroid.runDelayedOnUiThread
-import com.pawegio.kandroid.show
+// import com.pawegio.kandroid.hide // **** पुराना इम्पोर्ट हटा दिया गया ****
+// import com.pawegio.kandroid.runDelayedOnUiThread // **** पुराना इम्पोर्ट हटा दिया गया ****
+// import com.pawegio.kandroid.show // **** पुराना इम्पोर्ट हटा दिया गया ****
 import kotlin.math.ceil
 
-
 class CustomToolbar : FrameLayout, View.OnClickListener, Animation.AnimationListener, View.OnFocusChangeListener, TextView.OnEditorActionListener, TextWatcher {
-
 
     private lateinit var inputContainer: LinearLayout
     private lateinit var navIcon: ImageView
@@ -51,13 +51,13 @@ class CustomToolbar : FrameLayout, View.OnClickListener, Animation.AnimationList
     private var alphaRecord : AlphaAnimation?=null
 
     var enableSearch:Boolean = true
-
     private var enableStatePermission:Boolean = false
 
     var statePermission : Boolean = false
         set(state) {
-            stateView.show()
-//            stateView.setImageResource(if (state) R.drawable.ic_status_key_enable_24dp else R.drawable.ic_status_key_disable_24dp)
+            // **** बदला हुआ कोड ****
+            stateView.visibility = View.VISIBLE
+            // stateView.setImageResource(if (state) R.drawable.ic_status_key_enable_24dp else R.drawable.ic_status_key_disable_24dp)
             field = state
         }
 
@@ -68,21 +68,13 @@ class CustomToolbar : FrameLayout, View.OnClickListener, Animation.AnimationList
         }
 
     private var isActionEnabled:Boolean = false
-
     private var isSearchEnabled:Boolean = false
-
     private var isSearchDisabledForAction : Boolean = false
-
     private var clickClearText : Boolean = false
-
     private var isSuggestionsVisible: Boolean = false
-
-
     private var density: Float = 0.toFloat()
-
     var menu: PopupMenu? = null
         private set
-
     private var navIconShown = true
 
     var setTitle : String
@@ -108,8 +100,6 @@ class CustomToolbar : FrameLayout, View.OnClickListener, Animation.AnimationList
             timerRecord.text = timer
         }
 
-
-
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
         init()
     }
@@ -119,12 +109,7 @@ class CustomToolbar : FrameLayout, View.OnClickListener, Animation.AnimationList
     }
 
     private fun init() {
-
-
         density = resources.displayMetrics.density
-
-
-
         recyclerView.layoutManager = LinearLayoutManager(context)
 
         setOnClickListener(this)
@@ -143,11 +128,12 @@ class CustomToolbar : FrameLayout, View.OnClickListener, Animation.AnimationList
 
         setupIconRippleStyle()
         inflateMenu()
-
         topView()
-
     }
 
+    fun setOnToolbarActionListener(listener: OnToolbarActionListener) {
+        this.onToolbarActionListener = listener
+    }
 
     @SuppressLint("InternalInsetResource", "DiscouragedApi")
     private fun topView(){
@@ -157,7 +143,6 @@ class CustomToolbar : FrameLayout, View.OnClickListener, Animation.AnimationList
         else ceil(((if (isAndroidM())  24 else 25) * density).toDouble()).toInt()
         setPadding(0,top,0,0)
     }
-
 
     private fun setupIconRippleStyle() {
         val rippleStyle = TypedValue()
@@ -171,14 +156,11 @@ class CustomToolbar : FrameLayout, View.OnClickListener, Animation.AnimationList
         val paramsDelete = actionDelete.layoutParams as RelativeLayout.LayoutParams
         paramsDelete.rightMargin = (48 * density).toInt()
         actionDelete.layoutParams = paramsDelete
-        menuIcon.show()
+        // **** बदला हुआ कोड ****
+        menuIcon.visibility = View.VISIBLE
         menuIcon.setOnClickListener(this)
         menu = PopupMenu(context, menuIcon)
         menu!!.gravity = Gravity.END
-    }
-
-    fun setOnToolbarActionListener(onToolbarActionListener: OnToolbarActionListener) {
-        this.onToolbarActionListener = onToolbarActionListener
     }
 
     fun enableAction(){
@@ -193,13 +175,15 @@ class CustomToolbar : FrameLayout, View.OnClickListener, Animation.AnimationList
             isSearchEnabled = false
             val `in` = AnimationUtils.loadAnimation(context, R.anim.fade_in)
             val out = AnimationUtils.loadAnimation(context, R.anim.fade_out)
-            placeHolderView.show()
+            // **** बदला हुआ कोड ****
+            placeHolderView.visibility = View.VISIBLE
             placeHolderView.startAnimation(`in`)
             inputContainer.startAnimation(out)
         }else{
             if (enableStatePermission) stateView.startAnimation(leftOut)
         }
-        actionDelete.show()
+        // **** बदला हुआ कोड ****
+        actionDelete.visibility = View.VISIBLE
         actionDelete.startAnimation(leftIn)
         if (listenerExists()) onToolbarActionListener!!.onActionStateChanged(true)
     }
@@ -211,7 +195,7 @@ class CustomToolbar : FrameLayout, View.OnClickListener, Animation.AnimationList
         val out = AnimationUtils.loadAnimation(context, R.anim.fade_out)
         out.setAnimationListener(this)
         actionDelete.startAnimation(out)
-        if (listenerExists()) {
+        if (listenerExists()){
             if (isSearchDisabledForAction && (searchEditText.text.toString() != "" || clickClearText)) {
                 isSearchDisabledForAction = false
                 clickClearText = false
@@ -230,7 +214,8 @@ class CustomToolbar : FrameLayout, View.OnClickListener, Animation.AnimationList
         val `in` = AnimationUtils.loadAnimation(context, R.anim.fade_in)
         out.setAnimationListener(this)
         inputContainer.startAnimation(out)
-        placeHolderView.show()
+        // **** बदला हुआ कोड ****
+        placeHolderView.visibility = View.VISIBLE
         placeHolderView.startAnimation(`in`)
 
         if (listenerExists()){
@@ -243,42 +228,30 @@ class CustomToolbar : FrameLayout, View.OnClickListener, Animation.AnimationList
         }
     }
 
-
-
     private fun enableSearch() {
         animateNavIcon()
-
-        // Update dataset and use specific change notifications (preferred approach)
         when {
-            isSearchEnabled -> {
-
-            }
-            else -> {
-
-            }
+            isSearchEnabled -> {}
+            else -> {}
         }
         isSearchEnabled = true
         val leftIn = AnimationUtils.loadAnimation(context, R.anim.fade_in_left)
         val leftOut = AnimationUtils.loadAnimation(context, R.anim.fade_out_left)
         leftIn.setAnimationListener(this)
-        placeHolderView.hide()
-        inputContainer.show()
+        // **** बदला हुआ कोड ****
+        placeHolderView.visibility = View.GONE
+        inputContainer.visibility = View.VISIBLE
         inputContainer.startAnimation(leftIn)
         if (listenerExists()) {
             onToolbarActionListener!!.onSearchStateChanged(true)
         }
         if (enableStatePermission) stateView.startAnimation(leftOut)
-
     }
 
     private fun animateNavIcon() {
         when {
-            navIconShown -> {
-
-            }
-            else -> {
-
-            }
+            navIconShown -> {}
+            else -> {}
         }
         val mDrawable = navIcon.drawable
         if (mDrawable is Animatable) {
@@ -299,24 +272,20 @@ class CustomToolbar : FrameLayout, View.OnClickListener, Animation.AnimationList
             linearRecord.layoutParams = lp
         }
         animator.start()
-        runDelayedOnUiThread(205){
+        // **** बदला हुआ कोड ****
+        Handler(Looper.getMainLooper()).postDelayed({
             if (listenerExists()) onToolbarActionListener?.onChangeHeight()
-        }
+        }, 205)
     }
-
-
 
     private fun listenerExists(): Boolean {
         return onToolbarActionListener != null
     }
 
-
     override fun onAnimationStart(animation: Animation) {}
-
     override fun onAnimationEnd(animation: Animation?) {
         TODO("Not yet implemented")
     }
-
     override fun onAnimationRepeat(animation: Animation) {}
 
     override fun onFocusChange(v: View, hasFocus: Boolean) {
@@ -326,9 +295,7 @@ class CustomToolbar : FrameLayout, View.OnClickListener, Animation.AnimationList
     override fun onEditorAction(v: TextView?, actionId: Int, event: KeyEvent?): Boolean {
         val filter = searchEditText.text.toString()
         when {
-            filter!="" -> {
-
-            }
+            filter!="" -> {}
         }
         searchEditText.showKeyboard(false)
         return true
@@ -336,24 +303,19 @@ class CustomToolbar : FrameLayout, View.OnClickListener, Animation.AnimationList
 
     private fun textSearchConfirmed(text: String){
         if (listenerExists()) onToolbarActionListener!!.onSearchConfirmed(text)
-
     }
-
 
     override fun afterTextChanged(s: Editable) {
         if (s.isEmpty()) textSearchConfirmed(s.toString())
     }
 
-    override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-    }
+    override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
     override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-        if (s.isNotEmpty()) { textSearchConfirmed(s.toString()) ; clearIcon.show() }
-        else clearIcon.hide()
+        // **** बदला हुआ कोड ****
+        if (s.isNotEmpty()) { textSearchConfirmed(s.toString()) ; clearIcon.visibility = View.VISIBLE }
+        else clearIcon.visibility = View.GONE
     }
-
-
-
 
     interface OnToolbarActionListener {
         fun onSearchStateChanged(enabled: Boolean)
@@ -370,7 +332,6 @@ class CustomToolbar : FrameLayout, View.OnClickListener, Animation.AnimationList
         const val BUTTON_STATE = 4
         const val BUTTON_ACTION_DELETE = 5
     }
-
 
     override fun onClick(v: View?) {
         TODO("Not yet implemented")

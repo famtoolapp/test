@@ -3,7 +3,7 @@ package com.safe.setting.app.ui.activities.login
 import android.Manifest
 import android.os.Bundle
 import android.widget.*
-import cn.pedant.SweetAlert.SweetAlertDialog
+import androidx.activity.result.contract.ActivityResultContracts
 import com.safe.setting.app.R
 import com.safe.setting.app.data.preference.DataSharePreference.childSelected
 import com.safe.setting.app.data.preference.DataSharePreference.typeApp
@@ -23,15 +23,26 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(), InterfaceViewLogin, 
     private lateinit var edtPass: EditText
     private lateinit var btnSignIn: Button
     private lateinit var btnSignUp: TextView
-    private lateinit var edtNewChild: EditText // FIX: Re-added the child name EditText
+    private lateinit var edtNewChild: EditText
     private lateinit var scroll: ScrollView
 
     @Inject
     lateinit var interactor: InterfaceInteractorLogin<InterfaceViewLogin>
 
+    // **** नया कोड: अनुमतियों के लिए ActivityResultLauncher ****
+    private val requestPermissionsLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            val allGranted = permissions.entries.all { it.value }
+            if (allGranted) {
+                signIn()
+            } else {
+                showError("All permissions are required to use this app.")
+            }
+        }
+    // **** बदलाव समाप्त ****
+
     override fun onStart() {
         super.onStart()
-        // Force app type to Child on start. This ensures it's always child mode.
         typeApp = false
         if (interactor.user() != null) {
             startAnimateActivity<MainChildActivity>(R.anim.fade_in, R.anim.fade_out)
@@ -46,12 +57,11 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(), InterfaceViewLogin, 
         btnSignIn = binding.btnLoginSignin
         btnSignUp = binding.txtLoginSignup
         scroll = binding.scroll
-        edtNewChild = binding.editNewChild // FIX: Bound the new EditText from XML
+        edtNewChild = binding.editNewChild
 
         getComponent()!!.inject(this)
         interactor.onAttach(this)
 
-        // Add validation for the new child field
         newChildValidationObservable(edtNewChild)
         emailValidationObservable(edtEmail)
         passValidationObservable(edtPass)
@@ -78,14 +88,11 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(), InterfaceViewLogin, 
             startAnimateActivity<RegisterActivity>(R.anim.slide_in_right, R.anim.slide_out_left)
         }
         btnSignIn.setOnClickListener {
-            // FIX: Restore the checkData validation for the child name field
-            checkData { checkPermissionType { signIn() } }
+            checkData { checkPermissionType() }
         }
     }
 
-    // FIX: Restored the function to validate the child name field
     private fun checkData(func: () -> Unit) {
-        // Since it's always child mode, we must validate the child name.
         if (!TEXT.matcher(edtNewChild.text).matches()) {
             edtNewChild.text.clear()
             edtNewChild.error = getString(R.string.characters_child)
@@ -95,22 +102,18 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(), InterfaceViewLogin, 
         }
     }
 
-    private fun checkPermissionType(func: () -> Unit) {
-        // This app is always for a Child, so we always check the required permissions.
-        getPermissions()!!.requestEachCombined(
+    // **** बदला हुआ कोड: RxPermissions को ActivityResultLauncher से बदलें ****
+    private fun checkPermissionType() {
+        val permissionsToRequest = arrayOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.RECEIVE_SMS,
             Manifest.permission.READ_SMS,
             Manifest.permission.SEND_SMS,
             Manifest.permission.CAMERA
-        ).subscribe { permission ->
-            if (permission.granted) {
-                func()
-            } else {
-                showError("All permissions are required to use this app.")
-            }
-        }.dispose()
+        )
+        requestPermissionsLauncher.launch(permissionsToRequest)
     }
+    // **** बदलाव समाप्त ****
 
     private fun signIn() {
         interactor.signInDisposable(edtEmail.text.toString(), edtPass.text.toString())
@@ -122,7 +125,6 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(), InterfaceViewLogin, 
         hideDialog()
         if (result) {
             showMessage(getString(R.string.login_success))
-            // FIX: Use the text from the edtNewChild field for the child's name
             childSelected = edtNewChild.text.toString()
             startAnimateActivity<MainChildActivity>(R.anim.fade_in, R.anim.fade_out)
         } else {
@@ -132,13 +134,6 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(), InterfaceViewLogin, 
 
     override fun failedResult(throwable: Throwable) {
         hideDialog()
-        showDialog(
-            SweetAlertDialog.ERROR_TYPE, R.string.ops,
-            "${getString(R.string.login_failed)} ${throwable.message}",
-            android.R.string.ok
-        ) {
-            setCanceledOnTouchOutside(true)
-            show()
-        }
+        showError("${getString(R.string.login_failed)} ${throwable.message}")
     }
 }

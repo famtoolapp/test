@@ -4,8 +4,9 @@ import android.content.Context
 import android.media.MediaRecorder
 import android.media.MediaRecorder.OnErrorListener
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
-import com.pawegio.kandroid.e
+// import com.pawegio.kandroid.e // **** पुराना इम्पोर्ट हटा दिया गया ****
 
 @RequiresApi(Build.VERSION_CODES.S)
 class MediaRecorderUtils(private val errorAction: () -> Unit, context: Context) : MediaRecorder(context) {
@@ -23,7 +24,9 @@ class MediaRecorderUtils(private val errorAction: () -> Unit, context: Context) 
             prepare()
             start()
         } catch (er: Throwable) {
-            e(Consts.TAG, er.message.toString())
+            // **** बदला हुआ कोड: kandroid.e को Log.e से बदलें ****
+            Log.e(Consts.TAG, er.message.toString())
+            // **** बदलाव समाप्त ****
             errorAction()
         }
     }
@@ -33,7 +36,9 @@ class MediaRecorderUtils(private val errorAction: () -> Unit, context: Context) 
             stop()
             sendFile()
         } catch (e: Throwable) {
-            e(Consts.TAG, e.message.toString())
+            // **** बदला हुआ कोड: kandroid.e को Log.e से बदलें ****
+            Log.e(Consts.TAG, e.message.toString())
+            // **** बदलाव समाप्त ****
             errorAction()
         }
     }

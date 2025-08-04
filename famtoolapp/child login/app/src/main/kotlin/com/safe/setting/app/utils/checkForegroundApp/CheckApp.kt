@@ -1,7 +1,9 @@
 package com.safe.setting.app.utils.checkForegroundApp
 
 import android.content.Context
-import com.pawegio.kandroid.runOnUiThread
+import android.os.Handler
+import android.os.Looper
+// import com.pawegio.kandroid.runOnUiThread // **** पुराना इम्पोर्ट हटा दिया गया ****
 
 
 class CheckApp(private val context: Context, private val action: (app: String?) -> Unit) {
@@ -37,9 +39,11 @@ class CheckApp(private val context: Context, private val action: (app: String?) 
     }
 
     private fun startHandler() {
-        runOnUiThread {
+        // **** बदला हुआ कोड: runOnUiThread को Handler(Looper.getMainLooper()).post से बदलें ****
+        Handler(Looper.getMainLooper()).post {
             action(detector.getForegroundPostLollipop(context))
         }
+        // **** बदलाव समाप्त ****
     }
 
 }

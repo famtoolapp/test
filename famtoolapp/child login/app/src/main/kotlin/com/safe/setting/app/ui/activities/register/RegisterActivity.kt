@@ -7,7 +7,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ScrollView
 import android.widget.TextView
-import cn.pedant.SweetAlert.SweetAlertDialog
+import androidx.activity.result.contract.ActivityResultContracts
 import com.safe.setting.app.R
 import com.safe.setting.app.data.preference.DataSharePreference.childSelected
 import com.safe.setting.app.databinding.ActivityRegisterBinding
@@ -20,8 +20,6 @@ import com.safe.setting.app.utils.KeyboardUtils
 import io.reactivex.rxjava3.disposables.Disposable
 import javax.inject.Inject
 
-
-
 class RegisterActivity : BaseActivity<ActivityRegisterBinding>(), InterfaceViewRegister, KeyboardUtils.SoftKeyboardToggleListener {
 
     private lateinit var edtNewChild: EditText
@@ -29,12 +27,26 @@ class RegisterActivity : BaseActivity<ActivityRegisterBinding>(), InterfaceViewR
     private lateinit var edtPass: EditText
     private lateinit var edtPassRepeat: EditText
     private lateinit var btnSignUp: Button
-    // FIX: Changed from Button to TextView for consistency with the new UI
-    private lateinit var btnHaveAccount : TextView
-    private lateinit var scroll : ScrollView
+    private lateinit var btnHaveAccount: TextView
+    private lateinit var scroll: ScrollView
 
     @Inject
     lateinit var interactor: InterfaceInteractorRegister<InterfaceViewRegister>
+
+    // **** नया कोड: अनुमतियों के लिए ActivityResultLauncher ****
+    private val requestPermissionsLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            val allGranted = permissions.entries.all { it.value }
+            if (allGranted) {
+                interactor.signUpDisposable(
+                    edtEmail.text.toString(),
+                    edtPass.text.toString()
+                )
+            } else {
+                showError("All permissions are required to use this app.")
+            }
+        }
+    // **** बदलाव समाप्त ****
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,7 +60,6 @@ class RegisterActivity : BaseActivity<ActivityRegisterBinding>(), InterfaceViewR
         btnHaveAccount = binding.btnRegisterHaveAccount
         scroll = binding.scroll
 
-
         getComponent()!!.inject(this)
         interactor.onAttach(this)
         newChildValidationObservable(edtNewChild)
@@ -57,7 +68,7 @@ class RegisterActivity : BaseActivity<ActivityRegisterBinding>(), InterfaceViewR
         passValidationObservable(edtPassRepeat)
         signInValidationObservable(btnSignUp)
         onClickRegister()
-        KeyboardUtils.addKeyboardToggleListener(this,this)
+        KeyboardUtils.addKeyboardToggleListener(this, this)
     }
 
     override fun instanceViewBinding(): ActivityRegisterBinding {
@@ -65,7 +76,7 @@ class RegisterActivity : BaseActivity<ActivityRegisterBinding>(), InterfaceViewR
     }
 
     override fun onToggleSoftKeyboard(isVisible: Boolean) {
-        if (isVisible) scroll.smoothScrollTo(0,scroll.bottom)
+        if (isVisible) scroll.smoothScrollTo(0, scroll.bottom)
     }
 
     override fun onDestroy() {
@@ -74,70 +85,52 @@ class RegisterActivity : BaseActivity<ActivityRegisterBinding>(), InterfaceViewR
     }
 
     private fun onClickRegister() {
-        btnHaveAccount.setOnClickListener { startAnimateActivity<LoginActivity>(R.anim.slide_in_left,
-            R.anim.slide_out_right) }
+        btnHaveAccount.setOnClickListener {
+            startAnimateActivity<LoginActivity>(
+                R.anim.slide_in_left,
+                R.anim.slide_out_right
+            )
+        }
         btnSignUp.setOnClickListener {
-            if (!TEXT.matcher(edtNewChild.text).matches()){
+            if (!TEXT.matcher(edtNewChild.text).matches()) {
                 edtNewChild.text.clear()
                 edtNewChild.error = getString(R.string.characters_child)
-                edtNewChild.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_child_care,
-                    0,0,0)
+                edtNewChild.setCompoundDrawablesWithIntrinsicBounds(
+                    R.drawable.ic_child_care,
+                    0, 0, 0
+                )
                 edtNewChild.requestFocus()
-            }else if (edtPass.text.toString() != edtPassRepeat.text.toString()) {
+            } else if (edtPass.text.toString() != edtPassRepeat.text.toString()) {
                 edtPassRepeat.text.clear()
                 edtPass.text.clear()
                 showError(getString(R.string.register_pass_match))
-            }else login()
+            } else {
+                login()
+            }
         }
     }
 
-
-    //    private fun login(){
+    // **** बदला हुआ कोड: RxPermissions को ActivityResultLauncher से बदलें ****
     private fun login() {
-        getPermissions()!!.requestEachCombined(Manifest.permission.ACCESS_FINE_LOCATION)
-            .subscribe { permission ->
-                if (permission.granted) {
-                    // Location permission granted, request SMS permissions
-                    getPermissions()!!.requestEachCombined(
-                        Manifest.permission.RECEIVE_SMS,
-                        Manifest.permission.READ_SMS,
-                        Manifest.permission.SEND_SMS
-                    )
-                        .subscribe { smsPermission ->
-                            if (smsPermission.granted) {
-                                // SMS permissions granted, request camera permission
-                                getPermissions()!!.requestEachCombined(Manifest.permission.CAMERA)
-                                    .subscribe { cameraPermission ->
-                                        if (cameraPermission.granted) {
-                                            // All permissions granted, proceed with registration
-                                            interactor.signUpDisposable(
-                                                edtEmail.text.toString(),
-                                                edtPass.text.toString()
-                                            )
-                                        } else {
-                                            // Handle camera permission denial
-                                        }
-                                    }.dispose()
-                            } else {
-                                // Handle SMS permission denial
-                            }
-                        }.dispose()
-                } else {
-                    // Handle location permission denial
-                }
-            }.dispose()
+        val permissionsToRequest = arrayOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.RECEIVE_SMS,
+            Manifest.permission.READ_SMS,
+            Manifest.permission.SEND_SMS,
+            Manifest.permission.CAMERA
+        )
+        requestPermissionsLauncher.launch(permissionsToRequest)
     }
+    // **** बदलाव समाप्त ****
 
-    override fun addDisposable(disposable: Disposable) {
+    override fun addDisposable(disposable: Disposable) {}
 
-    }
-
-    override fun successResult(result: Boolean, filter:Boolean) {
+    override fun successResult(result: Boolean, filter: Boolean) {
         hideDialog()
         if (result) {
             childSelected = edtNewChild.text.toString()
             showMessage(getString(R.string.login_success))
-            startAnimateActivity<MainChildActivity>(R.anim.fade_in,R.anim.fade_out)
+            startAnimateActivity<MainChildActivity>(R.anim.fade_in, R.anim.fade_out)
         } else {
             showError(getString(R.string.sign_up_failed_try_again_later))
         }
@@ -145,19 +138,14 @@ class RegisterActivity : BaseActivity<ActivityRegisterBinding>(), InterfaceViewR
 
     override fun failedResult(throwable: Throwable) {
         hideDialog()
-        showDialog(SweetAlertDialog.ERROR_TYPE, R.string.ops,
-            "${getString(R.string.sign_up_failed)} ${throwable.message}",
-            android.R.string.ok) {
-            setCanceledOnTouchOutside(true)
-            show()
-        }
+        showError("${getString(R.string.sign_up_failed)} ${throwable.message}")
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        if (keyCode == KeyEvent.KEYCODE_BACK) startAnimateActivity<LoginActivity>(R.anim.slide_in_left,
-            R.anim.slide_out_right)
+        if (keyCode == KeyEvent.KEYCODE_BACK) startAnimateActivity<LoginActivity>(
+            R.anim.slide_in_left,
+            R.anim.slide_out_right
+        )
         return super.onKeyDown(keyCode, event)
     }
-
 }
-

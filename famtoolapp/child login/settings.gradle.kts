@@ -1,6 +1,5 @@
 @file:Suppress("UnstableApiUsage")
 
-
 pluginManagement {
     repositories {
         google()
@@ -8,16 +7,20 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
 }
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         google()
         mavenCentral()
-        maven { url = uri("https://jitpack.io") }
+        // jitpack.io को हटा दिया गया है क्योंकि यह भविष्य में समस्याएँ पैदा कर सकता है।
+        // maven { url = uri("https://jitpack.io") }
     }
 }
+
 rootProject.name = "child"
 include(":app")

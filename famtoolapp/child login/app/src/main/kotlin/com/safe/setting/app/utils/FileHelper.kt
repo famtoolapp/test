@@ -6,34 +6,33 @@ import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.provider.ContactsContract
 import android.provider.MediaStore
+import android.util.Log
+import android.widget.Toast
 import com.safe.setting.app.utils.Consts.ADDRESS_IMAGE
 import com.safe.setting.app.utils.Consts.TAG
-import com.pawegio.kandroid.e
-import com.pawegio.kandroid.longToast
+// import com.pawegio.kandroid.e // **** पुराना इम्पोर्ट हटा दिया गया ****
+// import com.pawegio.kandroid.longToast // **** पुराना इम्पोर्ट हटा दिया गया ****
 import java.io.File
 import java.io.ByteArrayOutputStream
 import java.io.FileOutputStream
 import kotlin.jvm.Throws
-
 
 object FileHelper{
     fun Context.getFilePath(): String =
         if (externalCacheDir != null) externalCacheDir!!.absolutePath
         else cacheDir.absolutePath
 
-
     fun Context.deleteFileName(fileName: String?) {
         if (fileName == null)
             return
         try {
             val file = File(fileName)
-
             if (file.exists()) {
                 file.delete()
             }
         } catch (e: Exception) {
-            // FIX: Replaced deleted string resource with a hardcoded string
-            longToast("Failed to delete file: ${e.message}")
+            // **** बदला हुआ कोड ****
+            Toast.makeText(this, "Failed to delete file: ${e.message}", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -42,12 +41,12 @@ object FileHelper{
             return
         try {
             val file = File(fileName)
-
             if (file.exists()) {
                 file.delete()
             }
         } catch (ex: Exception) {
-            e(TAG, ex.message.toString())
+            // **** बदला हुआ कोड ****
+            Log.e(TAG, ex.message.toString())
         }
     }
 
@@ -60,8 +59,8 @@ object FileHelper{
                 file.delete()
             }
         }catch (e:Exception){
-            // FIX: Replaced deleted string resource with a hardcoded string
-            longToast("Failed to delete files: ${e.message}")
+            // **** बदला हुआ कोड ****
+            Toast.makeText(this, "Failed to delete files: ${e.message}", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -90,13 +89,10 @@ object FileHelper{
                     }
                 } while (names.moveToNext())
             }
-
             names.close()
         }
-
         return res
     }
-
 
     fun Uri.getUriPath(context: Context): String? {
         val projection = arrayOf(MediaStore.Images.Media.DATA)

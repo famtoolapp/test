@@ -34,15 +34,11 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = "11"
-        languageVersion = "1.9"
 
-    }
 
     buildTypes {
         release {
@@ -52,45 +48,9 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-        }
-
-        // यह बिल्ड टाइप ProGuard के साथ डीबगिंग के लिए है
-        create("debugWithProguard") {
-            initWith(getByName("debug")) // debug की सभी सेटिंग्स कॉपी करें
-            isMinifyEnabled = true // ProGuard को सक्षम करें
-            isShrinkResources = true // रिसोर्स श्रिंकिंग को सक्षम करें
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-            // नोट: isDebuggable = true होने के कारण Gradle एक चेतावनी दिखाएगा,
-            // लेकिन यह आपको क्रैश को डीबग करने की अनुमति देगा।
-        }
-
-        debug {
-            isMinifyEnabled = false
-            isShrinkResources = false
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
-
-    bundle {
-        abi {
-            enableSplit = true
-        }
-    }
-
-//    buildTypes {
-//        release {
-//            isMinifyEnabled = true
-//            isShrinkResources = true
-//            proguardFiles(
-//                getDefaultProguardFile("proguard-android-optimize.txt"),
-//                "proguard-rules.pro"
-//            )
-//            signingConfig = signingConfigs.getByName("debug")
-//        }
-//    }
-
 
     dependencies {
         implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
@@ -115,22 +75,9 @@ android {
         implementation("com.google.firebase:firebase-auth:24.0.0")
         implementation("com.google.firebase:firebase-database:22.0.0")
         implementation("com.google.firebase:firebase-storage:22.0.0")
-        implementation("com.google.firebase:firebase-core:21.1.1")
         implementation("com.firebaseui:firebase-ui:8.0.2")
         implementation(platform("com.google.firebase:firebase-bom:34.0.0"))
         implementation("com.google.firebase:firebase-analytics-ktx:22.5.0")
-
-        //spinner
-        implementation("com.jaredrummler:material-spinner:1.3.1")
-
-        //animation
-        implementation("com.daimajia.androidanimations:library:2.4@aar")
-
-        //dialog
-        implementation("com.github.f0ris.sweetalert:library:1.6.2")
-
-        //KAndroid
-        implementation("com.github.pawegio:KAndroid:0.8.8@aar")
 
         //Android-Ktx
         implementation("androidx.core:core-ktx:1.16.0")
@@ -139,9 +86,6 @@ android {
         implementation("com.google.dagger:dagger:2.51.1")
         kapt("com.google.dagger:dagger-compiler:2.51.1")
 
-        //RxPermissions
-        implementation("com.github.tbruyelle:rxpermissions:0.12")
-
         //RxBinding - Kotlin
         implementation("com.jakewharton.rxbinding4:rxbinding:4.0.0")
 
@@ -149,8 +93,6 @@ android {
         implementation("io.reactivex.rxjava3:rxkotlin:3.0.1")
         implementation("io.reactivex.rxjava3:rxandroid:3.0.2")
 
-        //deviceName
-        implementation("com.jaredrummler:android-device-names:2.1.1")
     }
 }
 java {
@@ -158,4 +100,3 @@ java {
         languageVersion = JavaLanguageVersion.of(17)
     }
 }
-

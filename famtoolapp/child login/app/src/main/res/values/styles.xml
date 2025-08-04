@@ -1,7 +1,8 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <!-- **** बदला हुआ कोड: Parent को Theme.MaterialComponents.DayNight.NoActionBar में बदला गया **** -->
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -17,7 +18,8 @@
         <item name="actionBarTheme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
     </style>
 
-    <style name="Child" parent="Theme.AppCompat.Light.NoActionBar">
+    <!-- **** बदला हुआ कोड: Parent को Theme.MaterialComponents.DayNight.NoActionBar में बदला गया **** -->
+    <style name="Child" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorRed_01</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -33,7 +35,8 @@
         <item name="android:textColor">@android:color/white</item>
     </style>
 
-    <style name="Transparent" parent="Theme.AppCompat.Light.NoActionBar">
+    <!-- **** बदला हुआ कोड: Parent को Theme.MaterialComponents.DayNight.NoActionBar में बदला गया **** -->
+    <style name="Transparent" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowContentOverlay">@null</item>
@@ -41,12 +44,14 @@
         <item name="android:backgroundDimEnabled">false</item>
     </style>
 
-    <style name="Login" parent="Theme.AppCompat.Light.NoActionBar">
+    <!-- **** बदला हुआ कोड: Parent को Theme.MaterialComponents.DayNight.NoActionBar में बदला गया **** -->
+    <style name="Login" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowBackground">@color/colorBlack</item>
     </style>
 
-    <style name="Lock" parent="Theme.AppCompat.Light.NoActionBar">
+    <!-- **** बदला हुआ कोड: Parent को Theme.MaterialComponents.DayNight.NoActionBar में बदला गया **** -->
+    <style name="Lock" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowTranslucentNavigation">true</item>
         <item name="android:windowBackground">@color/colorBlack</item>
@@ -127,6 +132,5 @@
     </style>
 
     <style name="Widget" parent="@android:style/Widget.Material" />
-
 
 </resources>

