@@ -1,7 +1,0 @@
-# ninja log v5
-1	46161	7758407495331246	CMakeFiles/native-lib.dir/native-lib.cpp.o	ca263dbb1aac06a4
-46188	53339	7758407595162418	C:/Users/deepa/Desktop/child login/app/build/intermediates/cxx/Debug/465v1j37/obj/arm64-v8a/libnative-lib.so	6f58db2ae6c52890
-85	183	0	clean	d3f504d426c1bd2e
-0	27	0	clean	d3f504d426c1bd2e
-12	82055	7759055061444291	CMakeFiles/native-lib.dir/native-lib.cpp.o	ca263dbb1aac06a4
-82056	105135	7759055275959205	C:/Users/deepa/Desktop/child login/app/build/intermediates/cxx/Debug/465v1j37/obj/arm64-v8a/libnative-lib.so	6f58db2ae6c52890
