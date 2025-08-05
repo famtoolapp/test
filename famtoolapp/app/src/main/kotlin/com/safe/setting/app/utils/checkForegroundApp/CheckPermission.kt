@@ -24,7 +24,7 @@ object CheckPermission{
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             appOps.unsafeCheckOpNoThrow(ops, android.os.Process.myUid(), packageName)
         } else {
-            @Suppress("DEPRECATION")
+
             appOps.checkOpNoThrow(ops, android.os.Process.myUid(), packageName)
         }
     }

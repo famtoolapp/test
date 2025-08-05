@@ -1,5 +1,3 @@
-@file:Suppress("unused")
-
 package com.safe.setting.app.utils.hiddenCameraServiceUtils
 
 import android.annotation.SuppressLint
@@ -110,7 +108,7 @@ internal class CameraPreview(context: Context, private val mCameraCallbacks: Cam
 
     }
 
-    @SuppressLint("MissingPermission")
+
     override fun surfaceCreated(surfaceHolder: SurfaceHolder) {
     }
 

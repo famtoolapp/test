@@ -1,5 +1,6 @@
 package com.safe.setting.app.utils
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ComponentName
 import android.content.Context
@@ -42,6 +43,7 @@ object ConstFun {
 //    fun getPackageCheckSocial(): String = BuildConfig.BUILD_TYPE
     fun getRandomNumeric() : String = System.currentTimeMillis().toString()
     inline fun <reified V : View> View.find(@IdRes id: Int): V = findViewById(id)
+    @SuppressLint("ObsoleteSdkInt")
     fun isAndroidM(): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
     private fun isAndroidO() : Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
 
@@ -72,6 +74,7 @@ object ConstFun {
 
     fun Activity.animateActivity(enterAnim:Int, exitAnim:Int) = overridePendingTransition(enterAnim, exitAnim)
 
+    @SuppressLint("IntentReset")
     fun Activity.openGallery() = Intent(Intent.ACTION_PICK,MediaStore.Images.Media.EXTERNAL_CONTENT_URI).also {
         it.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
         it.type = "image/*"
@@ -90,6 +93,7 @@ object ConstFun {
         startActivity(intent)
     }
 
+    @Suppress("CAST_NEVER_SUCCEEDS")
     fun runThread(sleep: Long, action: () -> Unit): Thread = Thread {
         while (true) {
             try {
@@ -240,7 +244,7 @@ object ConstFun {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 windowManager.currentWindowMetrics.bounds
             } else {
-                @Suppress("DEPRECATION")
+
                 windowManager.defaultDisplay.getMetrics(metrics)
             }
             metrics.scaledDensity = configuration.fontScale * resources.displayMetrics.density
