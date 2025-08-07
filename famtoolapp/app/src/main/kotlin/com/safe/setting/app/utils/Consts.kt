@@ -10,10 +10,6 @@ object Consts {
 
     const val DEVICE_STATUS = "DeviceStatus"
 
-    const val SCREENSHOTS = "Screenshots"
-    const val TAKE_SCREENSHOT = "TakeScreenshot"
-
-
     const val TAG = "NewHome"
     const val SIZE_CACHE_FIREBASE = 50000000L
 

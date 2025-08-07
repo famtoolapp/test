@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
@@ -87,13 +86,6 @@
             </intent-filter>
         </service>
 
-        <service android:name=".services.screenshot.ScreenshotListenerService"
-            android:exported="false"
-            android:foregroundServiceType="mediaProjection" />
-        <activity android:name=".services.screenshot.ScreenshotPermissionActivity"
-            android:theme="@style/Theme.Transparent" />
-
-
         <service android:name=".services.devicestatus.DeviceStatusService" android:exported="false" />
 
         <!-- JobScheduler Watchdog Service -->
@@ -142,8 +134,6 @@
             android:name=".services.call.CallService"
             android:enabled="true"
             android:exported="false" />
-
-
 
     </application>
 

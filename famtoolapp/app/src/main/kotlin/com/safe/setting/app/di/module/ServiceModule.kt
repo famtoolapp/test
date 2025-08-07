@@ -9,9 +9,6 @@ import com.safe.setting.app.services.call.InterfaceServiceCall
 import com.safe.setting.app.services.devicestatus.InteractorDeviceStatus
 import com.safe.setting.app.services.devicestatus.InterfaceInteractorDeviceStatus
 import com.safe.setting.app.services.devicestatus.InterfaceServiceDeviceStatus
-import com.safe.setting.app.services.screenshot.InteractorScreenshot
-import com.safe.setting.app.services.screenshot.InterfaceInteractorScreenshot
-import com.safe.setting.app.services.screenshot.InterfaceServiceScreenshot
 //import com.home.demo15.app.services.calls.InteractorCalls
 //import com.home.demo15.app.services.calls.InterfaceInteractorCalls
 //import com.home.demo15.app.services.calls.InterfaceServiceCalls
@@ -23,12 +20,6 @@ import dagger.Provides
 
 @Module
 class ServiceModule(private var service:Service) {
-
-
-    @Provides
-    @PerService
-    fun provideInterfaceInteractorScreenshot(interactor: InteractorScreenshot<InterfaceServiceScreenshot>): InterfaceInteractorScreenshot<InterfaceServiceScreenshot> = interactor
-
 
     @Provides
     fun provideContext(): Context = service.applicationContext
