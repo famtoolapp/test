@@ -2,7 +2,6 @@ package com.safe.setting.app.utils
 
 import android.content.Context
 import android.media.MediaRecorder
-import android.media.MediaRecorder.OnErrorListener
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi

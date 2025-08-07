@@ -1,6 +1,7 @@
 package com.safe.setting.app.ui.activities.lock
 
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
@@ -95,6 +96,7 @@ class LockActivity : BaseActivity<ActivityLockBinding>(), PinLockListener {
     }
     // **** बदलाव समाप्त ****
 
+    @SuppressLint("GestureBackNavigation")
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         if (keyCode == KeyEvent.KEYCODE_BACK) return false
         return super.onKeyDown(keyCode, event)

@@ -230,6 +230,44 @@
                     android:layout_centerVertical="true"
                     android:clickable="false" />
             </RelativeLayout>
+            <!-- **** नया स्क्रीनशॉट टॉगल यहाँ जोड़ें **** -->
+            <RelativeLayout
+                android:id="@+id/btn_enable_screenshot"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/dark_input_background"
+                android:padding="20dp">
+
+                <ImageView
+                    android:id="@+id/icon_screenshot"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:contentDescription="@string/todob"
+                    android:src="@drawable/ic_layers_24"
+                    app:tint="@color/dark_accent" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="16dp"
+                    android:layout_toStartOf="@+id/switch_screenshot"
+                    android:layout_toEndOf="@id/icon_screenshot"
+                    android:text="@string/enable_screenshot_service"
+                    android:textColor="@color/dark_text_primary"
+                    android:textSize="16sp" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/switch_screenshot"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:clickable="false" />
+            </RelativeLayout>
 
             <!-- **** नया टॉगल 2: प्ले स्टोर नोटिफिकेशन सेटिंग्स **** -->
             <RelativeLayout
@@ -285,6 +323,7 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="TextContrastCheck,VisualLintButtonSize" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

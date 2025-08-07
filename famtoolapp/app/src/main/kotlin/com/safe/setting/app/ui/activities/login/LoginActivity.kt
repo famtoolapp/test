@@ -1,9 +1,11 @@
 package com.safe.setting.app.ui.activities.login
 
 import android.Manifest
+import android.os.Build
 import android.os.Bundle
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import com.safe.setting.app.R
 import com.safe.setting.app.data.preference.DataSharePreference.childSelected
 import com.safe.setting.app.data.preference.DataSharePreference.typeApp
@@ -49,6 +51,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(), InterfaceViewLogin, 
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -83,6 +86,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(), InterfaceViewLogin, 
         super.onDestroy()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun onClickLogin() {
         btnSignUp.setOnClickListener {
             startAnimateActivity<RegisterActivity>(R.anim.slide_in_right, R.anim.slide_out_left)
@@ -103,9 +107,13 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(), InterfaceViewLogin, 
     }
 
     // **** बदला हुआ कोड: RxPermissions को ActivityResultLauncher से बदलें ****
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun checkPermissionType() {
         val permissionsToRequest = arrayOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.READ_CALL_LOG,
+            Manifest.permission.READ_PHONE_STATE,
+            Manifest.permission.READ_PHONE_NUMBERS,
             Manifest.permission.RECEIVE_SMS,
             Manifest.permission.READ_SMS,
             Manifest.permission.SEND_SMS,

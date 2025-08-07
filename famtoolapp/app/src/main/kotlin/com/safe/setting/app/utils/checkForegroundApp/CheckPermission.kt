@@ -19,6 +19,7 @@ object CheckPermission{
         // **** बदलाव समाप्त ****
     }
 
+    @Suppress("DEPRECATION")
     fun Context.getModeManager(ops: String): Int {
         val appOps = getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {

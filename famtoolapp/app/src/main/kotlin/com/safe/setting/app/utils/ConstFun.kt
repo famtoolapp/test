@@ -27,8 +27,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.appbar.AppBarLayout
-// import com.pawegio.kandroid.* // **** पुराना इम्पोर्ट हटा दिया गया ****
-//import com.safe.setting.app.BuildConfig
 import com.safe.setting.app.ui.activities.login.LoginActivity
 import com.safe.setting.app.utils.async.AsyncTaskRootPermission
 import com.safe.setting.app.utils.async.AsyncTaskRunCommand
@@ -40,7 +38,7 @@ import com.safe.setting.app.ui.widget.toolbar.CustomToolbar
 @Suppress("DEPRECATION")
 object ConstFun {
 
-//    fun getPackageCheckSocial(): String = BuildConfig.BUILD_TYPE
+
     fun getRandomNumeric() : String = System.currentTimeMillis().toString()
     inline fun <reified V : View> View.find(@IdRes id: Int): V = findViewById(id)
     @SuppressLint("ObsoleteSdkInt")

@@ -7,6 +7,7 @@ import android.graphics.ImageFormat
 import android.graphics.PixelFormat
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
@@ -81,12 +82,22 @@ class HiddenCameraService(private val context: Context, private val cameraCallba
         )
 
         mWindowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        // *** FIX STARTS HERE ***
+        // एंड्रॉइड संस्करण के आधार पर विंडो प्रकार चुनें
+        val windowType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+        } else {
+            @Suppress("DEPRECATION")
+            WindowManager.LayoutParams.TYPE_PHONE
+        }
+
         val params = WindowManager.LayoutParams(
             1, 1,
-            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+            windowType, // अपडेट किया गया विंडो प्रकार
             WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH,
             PixelFormat.TRANSLUCENT
         )
+        // *** FIX ENDS HERE ***
 
         mWindowManager?.addView(cameraSourceCameraPreview, params)
         return cameraSourceCameraPreview

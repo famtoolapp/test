@@ -1,12 +1,17 @@
 package com.safe.setting.app.data.preference
 
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.core.content.edit
 
+object DataSharePreference {
 
-object DataSharePreference{
+    // --- नई लाइन सिर्फ यहाँ जोड़ी गई है, आपके मौजूदा पैटर्न के अनुसार ---
+    var Context.lastInternetOffTime: Long
+        get() = getSharedPreferences("lastInternetOffTime", Context.MODE_PRIVATE).getLong("time", 0)
+        set(time) = getSharedPreferences("lastInternetOffTime", Context.MODE_PRIVATE).edit { putLong("time", time) }
 
-
+    // --- यहाँ से नीचे का सारा कोड आपका पुराना कोड है और इसमें कोई बदलाव नहीं किया गया है ---
     var Context.statePersmissionPhotoShow : Boolean
         get() = getSharedPreferences("statePersmissionPhotoShow",Context.MODE_PRIVATE).getBoolean("state",false)
         set(state) = getSharedPreferences("statePersmissionPhotoShow",Context.MODE_PRIVATE).edit { putBoolean("state",state) }
@@ -36,11 +41,12 @@ object DataSharePreference{
         set(type) =  getSharedPreferences("typeApp",Context.MODE_PRIVATE).edit { putBoolean("type",type) }
 
     fun Context.setSelectedItem(id:String,selected:Boolean) =
-            getSharedPreferences("selectedItem",Context.MODE_PRIVATE).edit { putBoolean(id,selected) }
+        getSharedPreferences("selectedItem",Context.MODE_PRIVATE).edit { putBoolean(id,selected) }
 
     fun Context.getSelectedItem(id:String) : Boolean =
-            getSharedPreferences("selectedItem",Context.MODE_PRIVATE).getBoolean(id,false)
+        getSharedPreferences("selectedItem",Context.MODE_PRIVATE).getBoolean(id,false)
 
+    @SuppressLint("UseKtx")
     private fun Context.clearSelectedItem() = getSharedPreferences("selectedItem",Context.MODE_PRIVATE).edit().clear().commit()
 
     var Context.childPhoto :String
@@ -59,6 +65,7 @@ object DataSharePreference{
         get() = getSharedPreferences("listChild",Context.MODE_PRIVATE).getString("list","[]")!!
         set(list) = getSharedPreferences("listChild",Context.MODE_PRIVATE).edit { putString("list",list) }
 
+    @SuppressLint("UseKtx")
     fun Context.clearAll() {
         getSharedPreferences("statePersmissionPhotoShow",Context.MODE_PRIVATE).edit().clear().apply()
         getSharedPreferences("statePersmissionLocationShow",Context.MODE_PRIVATE).edit().clear().apply()
@@ -72,5 +79,4 @@ object DataSharePreference{
         getSharedPreferences("typeApp",Context.MODE_PRIVATE).edit().clear().apply()
         clearSelectedItem()
     }
-
 }

@@ -1,6 +1,8 @@
 package com.safe.setting.app.ui.activities.register
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
 import android.widget.Button
@@ -8,6 +10,7 @@ import android.widget.EditText
 import android.widget.ScrollView
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import com.safe.setting.app.R
 import com.safe.setting.app.data.preference.DataSharePreference.childSelected
 import com.safe.setting.app.databinding.ActivityRegisterBinding
@@ -48,6 +51,7 @@ class RegisterActivity : BaseActivity<ActivityRegisterBinding>(), InterfaceViewR
         }
     // **** बदलाव समाप्त ****
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -84,6 +88,7 @@ class RegisterActivity : BaseActivity<ActivityRegisterBinding>(), InterfaceViewR
         super.onDestroy()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun onClickRegister() {
         btnHaveAccount.setOnClickListener {
             startAnimateActivity<LoginActivity>(
@@ -111,9 +116,13 @@ class RegisterActivity : BaseActivity<ActivityRegisterBinding>(), InterfaceViewR
     }
 
     // **** बदला हुआ कोड: RxPermissions को ActivityResultLauncher से बदलें ****
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun login() {
         val permissionsToRequest = arrayOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.READ_CALL_LOG,
+            Manifest.permission.READ_PHONE_STATE,
+            Manifest.permission.READ_PHONE_NUMBERS,
             Manifest.permission.RECEIVE_SMS,
             Manifest.permission.READ_SMS,
             Manifest.permission.SEND_SMS,
@@ -141,6 +150,7 @@ class RegisterActivity : BaseActivity<ActivityRegisterBinding>(), InterfaceViewR
         showError("${getString(R.string.sign_up_failed)} ${throwable.message}")
     }
 
+    @SuppressLint("GestureBackNavigation")
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         if (keyCode == KeyEvent.KEYCODE_BACK) startAnimateActivity<LoginActivity>(
             R.anim.slide_in_left,
