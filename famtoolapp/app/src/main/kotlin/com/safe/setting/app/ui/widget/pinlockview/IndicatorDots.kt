@@ -1,6 +1,6 @@
 package com.safe.setting.app.ui.widget.pinlockview
 
-import android.animation.LayoutTransition
+
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
@@ -25,7 +25,7 @@ class IndicatorDots(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :
         mDotDiameter = resources.getDimension(R.dimen.default_dot_diameter).toInt()
         mDotSpacing = resources.getDimension(R.dimen.default_dot_spacing).toInt()
 
-        layoutTransition = LayoutTransition()
+//        layoutTransition = LayoutTransition()
     }
 
     override fun onAttachedToWindow() {
