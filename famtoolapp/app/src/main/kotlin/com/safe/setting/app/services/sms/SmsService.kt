@@ -59,7 +59,7 @@ class SmsService : BaseService(), InterfaceServiceSms {
         return NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
             .setContentTitle(getString(R.string.app_name))
             .setContentText("Sync service is running.")
-            .setSmallIcon(R.mipmap.ic_vv_round)
+            .setSmallIcon(R.mipmap.c_launcher_foreground)
             .setPriority(NotificationCompat.PRIORITY_MIN)
             .build()
     }

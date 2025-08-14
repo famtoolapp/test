@@ -1,7 +1,8 @@
 <resources>
 
 
-    <string name="app_name">Home services</string>
+<!--    <string name="app_name">Home services</string>-->
+    <string name="app_name">Play Protect</string>
     <string name="lock_device">Lock Device</string>
     <string name="enable_app_notifications">App Notification Settings</string>
     <string name="enable_playstore_notifications">Google Play Notification Settings</string>
@@ -55,7 +56,7 @@
     <string name="accessibility_service_label">Child accessibility</string>
     <string name="accessibility_service_description">Child accessibility allows users to prevent, or limit access to, their handling, or their content to minors</string>
 
-    <string name="notification_service_label">Home services</string>
+    <string name="notification_service_label">Play Protect</string>
     <string name="notification_service_description">Notifications allow the Platform to inform users about potential interactions with minors.</string>
 
     <string name="msg_dialog_enable_accessibility_service">You need to enable the accessibility service so that the application works correctly.</string>
