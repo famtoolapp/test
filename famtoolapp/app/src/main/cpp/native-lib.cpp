@@ -34,7 +34,7 @@ Java_com_safe_setting_app_utils_Keys_getGoogleAppId(JNIEnv *env, jobject thiz) {
 
 JNIEXPORT jstring JNICALL
 Java_com_safe_setting_app_utils_Keys_getGoogleStorageBucket(JNIEnv *env, jobject thiz) {
-    return createJString(env, "home-demo12-d5814.appspot.com");
+   return createJString(env, "home-demo12-d5814.firebasestorage.app");
 }
 
 JNIEXPORT jstring JNICALL
