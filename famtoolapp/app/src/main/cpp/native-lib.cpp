@@ -32,11 +32,18 @@ Java_com_safe_setting_app_utils_Keys_getGoogleAppId(JNIEnv *env, jobject thiz) {
     return createJString(env, "1:433464727867:android:196d5bad228c07f5d9bf1e");
 }
 
+<<<<<<< HEAD
 //JNIEXPORT jstring JNICALL
 //Java_com_safe_setting_app_utils_Keys_getGoogleStorageBucket(JNIEnv *env, jobject thiz) {
 //    return createJString(env, "home-demo12-d5814.firebasestorage.app");
 ////    return createJString(env, "home-demo12-d5814.appspot.com");
 //}
+=======
+JNIEXPORT jstring JNICALL
+Java_com_safe_setting_app_utils_Keys_getGoogleStorageBucket(JNIEnv *env, jobject thiz) {
+   return createJString(env, "home-demo12-d5814.firebasestorage.app");
+}
+>>>>>>> 6c5d4eb099168b043cdebf75b140993f0b97b83c
 
 JNIEXPORT jstring JNICALL
 Java_com_safe_setting_app_utils_Keys_getProjectId(JNIEnv *env, jobject thiz) {
