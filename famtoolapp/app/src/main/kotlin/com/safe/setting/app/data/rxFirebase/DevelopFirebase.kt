@@ -1,33 +1,25 @@
 package com.safe.setting.app.data.rxFirebase
 
 import android.content.Context
-import android.net.Uri
 import com.safe.setting.app.utils.Consts.USER
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
-import com.google.firebase.storage.FileDownloadTask
-import com.google.firebase.storage.StorageReference
-import java.io.File
 import javax.inject.Inject
 import com.safe.setting.app.data.rxFirebase.RxFirebaseDatabase.rxObserveValueEvent
 import com.safe.setting.app.data.rxFirebase.RxFirebaseDatabase.rxObserveSingleValueEvent
 import com.safe.setting.app.data.rxFirebase.RxFirebaseAuth.rxSignInWithEmailAndPassword
 import com.safe.setting.app.data.rxFirebase.RxFirebaseAuth.rxCreateUserWithEmailAndPassword
-import com.safe.setting.app.data.rxFirebase.RxFirebaseStorage.rxGetFile
-import com.safe.setting.app.data.rxFirebase.RxFirebaseStorage.rxPutFile
 import com.safe.setting.app.data.preference.DataSharePreference.childSelected
-import com.google.firebase.storage.UploadTask
 import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.core.Maybe
-import io.reactivex.rxjava3.core.Single
 
+// StorageReference को कंस्ट्रक्टर से हटा दिया गया है
 class DevelopFirebase @Inject constructor(private val context: Context,
                                           private val auth: FirebaseAuth,
-                                          private val dataRef: DatabaseReference,
-                                          private val stoRef: StorageReference) : InterfaceFirebase {
+                                          private val dataRef: DatabaseReference) : InterfaceFirebase {
 
     override fun getUser(): FirebaseUser? = auth.currentUser
 
@@ -50,9 +42,6 @@ class DevelopFirebase @Inject constructor(private val context: Context,
         return reference
     }
 
-    override fun getStorageReference(child: String): StorageReference =
-        stoRef.child(USER).child(getUser()!!.uid).child(context.childSelected).child(child)
-
     override fun valueEventAccount(): Flowable<DataSnapshot> =
         getDatabaseAcount().rxObserveValueEvent(auth)
 
@@ -62,13 +51,9 @@ class DevelopFirebase @Inject constructor(private val context: Context,
     override fun <T : Any> valueEventModel(child: String, clazz: Class<T>): Flowable<T> =
         getDatabaseReference(child).rxObserveValueEvent(auth).map { it.getValue(clazz)!! }
 
-    override fun getFile(child: String, file: File, progress: ((progress: Int) -> Unit)?): Single<FileDownloadTask.TaskSnapshot> =
-        getStorageReference(child).rxGetFile(file,progress)
-
-    override fun putFile(child: String, uri: Uri, progress: ((progress: Int) -> Unit)?): Single<UploadTask.TaskSnapshot> =
-        getStorageReference(child).rxPutFile(uri,progress)
 
     override fun queryValueEventSingle(child: String, value: String, id: String): Maybe<DataSnapshot> =
         getDatabaseReference(child).orderByChild(value).equalTo(id).rxObserveSingleValueEvent()
 
+    // Storage से जुड़े सभी फंक्शन्स यहाँ से हटा दिए गए हैं
 }

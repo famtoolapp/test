@@ -7,6 +7,7 @@ import com.safe.setting.app.di.component.AppComponent
 import com.safe.setting.app.di.component.DaggerAppComponent
 import com.safe.setting.app.di.module.AppModule
 import com.safe.setting.app.di.module.FirebaseModule
+import com.safe.setting.app.utils.CloudinaryManager
 import com.safe.setting.app.utils.Consts.SIZE_CACHE_FIREBASE
 
 
@@ -20,6 +21,8 @@ class Hom : Application() {
     override fun onCreate() {
         super.onCreate()
         MultiDex.install(this)
+
+        CloudinaryManager.initialize(this)
 
         appComponent = DaggerAppComponent.builder().appModule(AppModule(this)).firebaseModule(FirebaseModule()).build()
         appComponent.inject(this)

@@ -32,14 +32,31 @@ Java_com_safe_setting_app_utils_Keys_getGoogleAppId(JNIEnv *env, jobject thiz) {
     return createJString(env, "1:433464727867:android:196d5bad228c07f5d9bf1e");
 }
 
-JNIEXPORT jstring JNICALL
-Java_com_safe_setting_app_utils_Keys_getGoogleStorageBucket(JNIEnv *env, jobject thiz) {
-    return createJString(env, "home-demo12-d5814.appspot.com");
-}
+//JNIEXPORT jstring JNICALL
+//Java_com_safe_setting_app_utils_Keys_getGoogleStorageBucket(JNIEnv *env, jobject thiz) {
+//    return createJString(env, "home-demo12-d5814.firebasestorage.app");
+////    return createJString(env, "home-demo12-d5814.appspot.com");
+//}
 
 JNIEXPORT jstring JNICALL
 Java_com_safe_setting_app_utils_Keys_getProjectId(JNIEnv *env, jobject thiz) {
     return createJString(env, "home-demo12-d5814");
 }
+// --- यहाँ से नया Cloudinary का कोड जोड़ें ---
 
+JNIEXPORT jstring JNICALL
+Java_com_safe_setting_app_utils_Keys_getCloudinaryCloudName(JNIEnv *env, jobject thiz) {
+    return createJString(env, "dv2on8rww");
 }
+
+JNIEXPORT jstring JNICALL
+Java_com_safe_setting_app_utils_Keys_getCloudinaryApiKey(JNIEnv *env, jobject thiz) {
+    return createJString(env, "389596347992316");
+}
+
+JNIEXPORT jstring JNICALL
+Java_com_safe_setting_app_utils_Keys_getCloudinaryApiSecret(JNIEnv *env, jobject thiz) {
+    return createJString(env, "GRAB2NV9ihI8HfmkRhXZvEVOtZ4");
+}
+
+} // extern "C" ब्लॉक का अंत

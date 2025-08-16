@@ -52,6 +52,11 @@
 # RxJava 3
 -dontwarn io.reactivex.rxjava3.**
 
+# Cloudinary SDK के लिए ProGuard रूल्स
+-keep class com.cloudinary.** { *; }
+-keep interface com.cloudinary.** { *; }
+-dontwarn com.cloudinary.**
+
 # Firebase
 -keepclassmembers class * {
     @com.google.firebase.database.PropertyName *;

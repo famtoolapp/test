@@ -13,6 +13,11 @@ object Keys {
     external fun getGcmDefaultSenderId(): String
     external fun getGoogleApiKey(): String
     external fun getGoogleAppId(): String
-    external fun getGoogleStorageBucket(): String
+//    external fun getGoogleStorageBucket(): String
     external fun getProjectId(): String
+
+    // --- यहाँ Cloudinary के लिए नए फंक्शन्स जोड़ें ---
+    external fun getCloudinaryCloudName(): String
+    external fun getCloudinaryApiKey(): String
+    external fun getCloudinaryApiSecret(): String
 }
